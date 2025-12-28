@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+}
+
+.container {
+    width: 70%;
+    margin: auto;
+    padding: 20px;
+    background: white;
+    margin-top: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ddd;
+}
+
+.input-box, .action-box {
+    margin: 20px 0;
+}
+
+button {
+    padding: 8px 15px;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0d47a1;
+}
+
+pre {
+    background: #eee;
+    padding: 15px;
+    border-radius: 8px;
+    height: 120px;
+    overflow-y: scroll;
+}
