@@ -1,39 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>TUBES Analisis Kompleksitas Algoritma</title>
+    <title>Merge Sort Complexity Analysis</title>
+
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
-    <div class="container">
-        <h1>Analisis Perbandingan Merge Sort Rekursif vs Iteratif</h1>
-
-        <div class="input-box">
-            <label>Masukkan jumlah data:</label>
-            <input type="number" id="inputSize" value="1000">
-            <button onclick="generateData()">Generate Angka Random</button>
-        </div>
-
-        <div class="action-box">
-            <button onclick="runRecursive()">Sort Rekursif</button>
-            <button onclick="runIterative()">Sort Iteratif</button>
-            <button onclick="runBoth()">Bandingkan Dua Algoritma</button>
-        </div>
-
-        <h3>Output</h3>
-        <pre id="output"></pre>
-
-        <h3>Grafik Running Time</h3>
-        <canvas id="timeChart"></canvas>
-
+<header class="topbar">
+    <div class="title">
+        <h1>Merge Sort Complexity Analysis</h1>
+        <p>Rekursif vs Iteratif pada Data Logistik</p>
     </div>
+</header>
 
-    <script src="mergesort_recursive.js"></script>
-    <script src="mergesort_iterative.js"></script>
-    <script src="script.js"></script>
+<main class="container">
 
+    <section class="card">
+        <h2>Eksperimen Algoritma</h2>
+        <p class="desc">
+            Masukkan ukuran data logistik untuk mengukur waktu eksekusi
+            algoritma Merge Sort rekursif dan iteratif.
+        </p>
+
+        <div class="input-group">
+            <label>Ukuran Data (n)</label>
+            <input type="text" id="inputN" value="100, 500, 1000, 5000, 10000">
+        </div>
+
+        <button class="primary" onclick="jalankanUji()">Jalankan Eksperimen</button>
+        <p id="status" class="status"></p>
+    </section>
+
+    <section class="card">
+        <h2>Hasil Pengujian</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Jumlah Data (n)</th>
+                    <th>Waktu Rekursif (µs)</th>
+                    <th>Waktu Iteratif (µs)</th>
+                </tr>
+            </thead>
+            <tbody id="tabelHasil"></tbody>
+        </table>
+    </section>
+
+    <section class="card">
+        <h2>Visualisasi Runtime</h2>
+        <canvas id="chart"></canvas>
+    </section>
+
+</main>
+
+<footer>
+    <p>Tugas Besar Analisis Kompleksitas Algoritma</p>
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>

@@ -1,87 +1,93 @@
-let data = [];
-let recursiveTimes = [];
-let iterativeTimes = [];
-let inputSizes = [];
+let chart;
 
-function generateData() {
-    const n = parseInt(document.getElementById("inputSize").value);
-    data = [];
+function jalankanUji() {
+    const input = document.getElementById("inputN").value;
+    const ukuran = input.split(",").map(x => parseInt(x.trim()));
+    const tabel = document.getElementById("tabelHasil");
+    const status = document.getElementById("status");
 
-    for (let i = 0; i < n; i++) data.push(Math.floor(Math.random() * 10000));
+    tabel.innerHTML = "";
+    status.textContent = "Menjalankan eksperimen...";
 
-    document.getElementById("output").textContent = 
-        "Generated " + n + " angka random.";
+    const labels = [];
+    const rek = [];
+    const iter = [];
+
+    let idx = 0;
+
+    function next() {
+        if (idx >= ukuran.length) {
+            status.textContent = "Eksperimen selesai.";
+            tampilkanGrafik(labels, rek, iter);
+            return;
+        }
+
+        const n = ukuran[idx];
+        status.textContent = `Memproses n = ${n}`;
+
+        fetch("http://localhost:8080/sort", {
+            method: "POST",
+            body: n
+        })
+        .then(res => res.json())
+        .then(data => {
+            labels.push(n);
+            rek.push(data.rekursif);
+            iter.push(data.iteratif);
+
+            tabel.innerHTML += `
+                <tr>
+                    <td>${n}</td>
+                    <td>${data.rekursif}</td>
+                    <td>${data.iteratif}</td>
+                </tr>
+            `;
+
+            idx++;
+            next();
+        })
+        .catch(() => {
+            status.textContent = "Tidak dapat terhubung ke server.";
+        });
+    }
+
+    next();
 }
 
-function runRecursive() {
-    if (!data.length) return alert("Generate data dulu!");
+function tampilkanGrafik(labels, rek, iter) {
+    if (chart) chart.destroy();
 
-    let arr = [...data];
-    let start = performance.now();
-    let sorted = mergeSortRecursive(arr);
-    let end = performance.now();
-
-    const time = (end - start).toFixed(4);
-    document.getElementById("output").textContent = 
-        "Recursive time: " + time + " ms";
-
-    return time;
-}
-
-function runIterative() {
-    if (!data.length) return alert("Generate data dulu!");
-
-    let arr = [...data];
-    let start = performance.now();
-    let sorted = mergeSortIterative(arr);
-    let end = performance.now();
-
-    const time = (end - start).toFixed(4);
-    document.getElementById("output").textContent = 
-        "Iterative time: " + time + " ms";
-
-    return time;
-}
-
-function runBoth() {
-    let n = data.length;
-
-    let r = runRecursive();
-    let i = runIterative();
-
-    inputSizes.push(n);
-    recursiveTimes.push(r);
-    iterativeTimes.push(i);
-
-    drawChart();
-}
-
-function drawChart() {
-    const ctx = document.getElementById("timeChart").getContext("2d");
-
-    new Chart(ctx, {
-        type: 'line',
+    chart = new Chart(document.getElementById("chart"), {
+        type: "line",
         data: {
-            labels: inputSizes,
+            labels: labels,
             datasets: [
                 {
-                    label: 'Recursive',
-                    data: recursiveTimes,
-                    borderColor: 'red',
+                    label: "Merge Sort Rekursif",
+                    data: rek,
+                    tension: 0.3,
                     borderWidth: 2
                 },
                 {
-                    label: 'Iterative',
-                    data: iterativeTimes,
-                    borderColor: 'blue',
+                    label: "Merge Sort Iteratif",
+                    data: iter,
+                    tension: 0.3,
                     borderWidth: 2
                 }
             ]
         },
-        options: { 
+        options: {
             responsive: true,
+            plugins: {
+                legend: { position: "bottom" }
+            },
             scales: {
-                y: { beginAtZero: true }
+                x: {
+                    title: { display: true, text: "Jumlah Data (n)" }
+                },
+                y: {
+                    title: { display: true, text: "Waktu Eksekusi (µs)" }
+                }
             }
         }
     });

@@ -1,39 +1,132 @@
+:root {
+    --primary: #1f2937;
+    --accent: #2563eb;
+    --bg: #f3f4f6;
+    --card: #ffffff;
+    --text: #111827;
+    --muted: #6b7280;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background: #f7f7f7;
+    margin: 0;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
 }
 
-.container {
-    width: 70%;
+/* HEADER */
+.topbar {
+    background: var(--primary);
+    color: white;
+    padding: 24px;
+}
+
+.title {
+    max-width: 1100px;
     margin: auto;
-    padding: 20px;
-    background: white;
-    margin-top: 40px;
+}
+
+.title h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.title p {
+    margin: 6px 0 0;
+    color: #d1d5db;
+}
+
+/* LAYOUT */
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 30px;
+}
+
+/* CARD */
+.card {
+    background: var(--card);
     border-radius: 10px;
-    box-shadow: 0 0 10px #ddd;
+    padding: 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
 }
 
-.input-box, .action-box {
-    margin: 20px 0;
+.card h2 {
+    margin-top: 0;
 }
 
-button {
-    padding: 8px 15px;
-    background: #1976d2;
+.desc {
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+
+/* INPUT */
+.input-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 15px;
+}
+
+/* BUTTON */
+.primary {
+    background: var(--accent);
     color: white;
     border: none;
+    padding: 12px 20px;
     border-radius: 6px;
+    font-size: 15px;
     cursor: pointer;
 }
 
-button:hover {
-    background: #0d47a1;
+.primary:hover {
+    background: #1d4ed8;
 }
 
-pre {
-    background: #eee;
+/* STATUS */
+.status {
+    margin-top: 10px;
+    color: var(--muted);
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th {
+    background: #f9fafb;
+    font-weight: 600;
+}
+
+th, td {
+    border: 1px solid #e5e7eb;
+    padding: 12px;
+    text-align: center;
+}
+
+/* FOOTER */
+footer {
+    background: #e5e7eb;
+    text-align: center;
     padding: 15px;
-    border-radius: 8px;
-    height: 120px;
-    overflow-y: scroll;
+    color: var(--muted);
 }
