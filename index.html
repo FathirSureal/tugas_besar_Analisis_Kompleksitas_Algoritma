@@ -2,38 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TUBES Analisis Kompleksitas Algoritma</title>
+    <title>Analisis Kompleksitas Merge Sort</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
-    <div class="container">
-        <h1>Analisis Perbandingan Merge Sort Rekursif vs Iteratif</h1>
+<header>
+    <h1>Analisis Kompleksitas Algoritma: Merge Sort Iteratif vs Rekursif</h1>
+    <p>Website analisis waktu eksekusi dan kelas kompleksitas algoritma pengurutan data.</p>
+</header>
 
-        <div class="input-box">
-            <label>Masukkan jumlah data:</label>
+<section class="section-box explanation">
+    <h2>Kategori Kompleksitas Waktu</h2>
+    <ul>
+        <li><strong>O(1)</strong> — Waktu konstan</li>
+        <li><strong>O(log n)</strong> — Logaritmik (divide kecil)</li>
+        <li><strong>O(n)</strong> — Linear</li>
+        <li><strong>O(n log n)</strong> — Linear-logaritmik (Merge Sort / Quick Sort)</li>
+        <li><strong>O(n²)</strong> — Kuadratik (Bubble / Insertion)</li>
+        <li><strong>O(2ⁿ)</strong> — Eksponensial</li>
+        <li><strong>O(n!)</strong> — Faktorial</li>
+    </ul>
+
+    <p>
+        Untuk Merge Sort, baik versi rekursif maupun iteratif, kelas kompleksitas teoretisnya adalah:
+        <strong>O(n log n)</strong>.  
+        Namun pada implementasi dunia nyata, versi iteratif biasanya lebih cepat
+        karena tidak ada overhead pemanggilan fungsi rekursif.
+    </p>
+</section>
+
+<section class="section-box">
+    <h2>Eksperimen</h2>
+
+    <div class="flex-row">
+        <div class="input-panel">
+            <label>Jumlah Data</label>
             <input type="number" id="inputSize" value="1000">
-            <button onclick="generateData()">Generate Angka Random</button>
+
+            <button onclick="generateData()">Generate Data</button>
+            <button onclick="runBoth()">Jalankan Analisis</button>
+
+            <div id="resultBox"></div>
         </div>
 
-        <div class="action-box">
-            <button onclick="runRecursive()">Sort Rekursif</button>
-            <button onclick="runIterative()">Sort Iteratif</button>
-            <button onclick="runBoth()">Bandingkan Dua Algoritma</button>
+        <div class="chart-panel">
+            <canvas id="timeChart"></canvas>
         </div>
-
-        <h3>Output</h3>
-        <pre id="output"></pre>
-
-        <h3>Grafik Running Time</h3>
-        <canvas id="timeChart"></canvas>
-
     </div>
+</section>
 
-    <script src="mergesort_recursive.js"></script>
-    <script src="mergesort_iterative.js"></script>
-    <script src="script.js"></script>
+<script src="mergesort_recursive.js"></script>
+<script src="mergesort_iterative.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
