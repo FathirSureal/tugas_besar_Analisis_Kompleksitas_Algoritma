@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeCharts();
     
     setTimeout(() => {
-        generatePackages(50);
+        generatePackages(100);
         showNotification('Aplikasi siap digunakan!', 'success');
     }, 500);
     
@@ -79,32 +79,59 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function setupEventListeners() {
+    // Slider untuk jumlah paket
     const countSlider = document.getElementById('package-count');
     const countValue = document.getElementById('count-value');
     
     countSlider.addEventListener('input', function() {
         countValue.textContent = this.value;
+        // Sync dengan input presisi
+        document.getElementById('package-count-input').value = this.value;
     });
     
+    // Input presisi untuk jumlah paket
+    const countInput = document.getElementById('package-count-input');
+    countInput.addEventListener('input', function() {
+        const value = Math.min(Math.max(1, parseInt(this.value) || 1), 10000);
+        this.value = value;
+        countSlider.value = value;
+        countValue.textContent = value;
+    });
+    
+    // Tombol terapkan untuk input presisi
+    document.getElementById('btn-apply-count').addEventListener('click', function() {
+        const value = parseInt(countInput.value);
+        if (value >= 1 && value <= 10000) {
+            countSlider.value = value;
+            countValue.textContent = value;
+            showNotification(`Jumlah paket diatur ke ${value}`, 'info');
+        }
+    });
+    
+    // Tombol generate data
     document.getElementById('btn-generate').addEventListener('click', function() {
         const count = parseInt(countSlider.value);
         generatePackages(count);
     });
     
+    // Tombol jalankan sorting
     document.getElementById('btn-sort').addEventListener('click', function() {
         runSelectedAlgorithm();
     });
     
+    // Tombol bandingkan semua
     document.getElementById('btn-compare').addEventListener('click', function() {
         compareAllAlgorithms();
     });
     
+    // Tombol reset
     document.getElementById('btn-reset').addEventListener('click', function() {
         if (confirm('Reset semua data dan hasil?')) {
             resetApplication();
         }
     });
     
+    // Tombol tampilkan semua/sorted
     document.getElementById('btn-show-all').addEventListener('click', function() {
         AppState.displayMode = 'all';
         updatePackageTable();
@@ -117,12 +144,14 @@ function setupEventListeners() {
         updateTableControls();
     });
     
+    // Pencarian paket
     document.getElementById('search-package').addEventListener('input', function(e) {
         AppState.searchQuery = e.target.value.toLowerCase();
         AppState.currentPage = 1;
         updatePackageTable();
     });
     
+    // Pagination
     document.getElementById('btn-prev').addEventListener('click', function() {
         if (AppState.currentPage > 1) {
             AppState.currentPage--;
@@ -138,6 +167,7 @@ function setupEventListeners() {
         }
     });
     
+    // Tombol deploy guide
     document.getElementById('btn-deploy').addEventListener('click', function() {
         showDeployGuide();
     });
@@ -469,7 +499,31 @@ function updateDashboard() {
 }
 
 function updateAlgorithmResult(algorithmId, time) {
-    const algoName = algorithmId.split('-')[1] || algorithmId;
+    let algoName;
+    
+    switch(algorithmId) {
+        case 'merge-iterative':
+            algoName = 'iterative';
+            break;
+        case 'merge-recursive':
+            algoName = 'recursive';
+            break;
+        case 'quick':
+            algoName = 'quick';
+            break;
+        case 'bubble':
+            algoName = 'bubble';
+            break;
+        case 'insertion':
+            // Tidak ada elemen untuk insertion di HTML
+            return;
+        case 'selection':
+            // Tidak ada elemen untuk selection di HTML
+            return;
+        default:
+            return;
+    }
+    
     const timeElement = document.getElementById(`time-${algoName}`);
     const statusElement = document.getElementById(`status-${algoName}`);
     
@@ -653,18 +707,22 @@ function updateTableControls() {
     const showAllBtn = document.getElementById('btn-show-all');
     const showSortedBtn = document.getElementById('btn-show-sorted');
     
-    if (AppState.displayMode === 'all') {
-        showAllBtn.classList.add('active');
-        showSortedBtn.classList.remove('active');
-    } else {
-        showAllBtn.classList.remove('active');
-        showSortedBtn.classList.add('active');
+    if (showAllBtn && showSortedBtn) {
+        if (AppState.displayMode === 'all') {
+            showAllBtn.classList.add('active');
+            showSortedBtn.classList.remove('active');
+        } else {
+            showAllBtn.classList.remove('active');
+            showSortedBtn.classList.add('active');
+        }
     }
 }
 
 function initializeCharts() {
-    const perfCtx = document.getElementById('chart-performance').getContext('2d');
-    AppState.charts.performance = new Chart(perfCtx, {
+    const perfCtx = document.getElementById('chart-performance');
+    if (!perfCtx) return;
+    
+    AppState.charts.performance = new Chart(perfCtx.getContext('2d'), {
         type: 'bar',
         data: {
             labels: Object.values(CONFIG.algorithms).map(a => a.name),
@@ -710,8 +768,10 @@ function initializeCharts() {
         }
     });
     
-    const compCtx = document.getElementById('chart-complexity').getContext('2d');
-    AppState.charts.complexity = new Chart(compCtx, {
+    const compCtx = document.getElementById('chart-complexity');
+    if (!compCtx) return;
+    
+    AppState.charts.complexity = new Chart(compCtx.getContext('2d'), {
         type: 'line',
         data: {
             labels: ['10', '50', '100', '500', '1000'],
@@ -873,8 +933,9 @@ function resetApplication() {
     updatePackageTable();
     updateTableControls();
     
-    Object.keys(CONFIG.algorithms).forEach(algoId => {
-        const algoName = algoId.split('-')[1] || algoId;
+    // Reset waktu dan status untuk semua algoritma yang ada di HTML
+    const algorithms = ['iterative', 'recursive', 'quick', 'bubble'];
+    algorithms.forEach(algoName => {
         const timeElement = document.getElementById(`time-${algoName}`);
         const statusElement = document.getElementById(`status-${algoName}`);
         
@@ -890,10 +951,13 @@ function resetApplication() {
         }
     });
     
-    document.getElementById('comparison-result').innerHTML = `
-        <h3><i class="fas fa-trophy"></i> Hasil Perbandingan</h3>
-        <p>Jalankan "Bandingkan Semua" untuk melihat perbandingan lengkap</p>
-    `;
+    const comparisonResult = document.getElementById('comparison-result');
+    if (comparisonResult) {
+        comparisonResult.innerHTML = `
+            <h3><i class="fas fa-trophy"></i> Hasil Perbandingan</h3>
+            <p>Jalankan "Bandingkan Semua" untuk melihat perbandingan lengkap</p>
+        `;
+    }
     
     updateCharts();
     
@@ -920,6 +984,7 @@ function showDeployGuide() {
     showNotification(guide, 'info');
 }
 
+// Tambahkan styles dinamis
 const dynamicStyles = document.createElement('style');
 dynamicStyles.textContent = `
 .active {
@@ -1010,6 +1075,57 @@ dynamicStyles.textContent = `
 .deploy-steps li {
     margin: 8px 0;
     color: #333;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 10000;
+    max-width: 400px;
+    animation: slideIn 0.3s ease;
+}
+
+.notification.success {
+    border-left: 4px solid #27ae60;
+}
+
+.notification.error {
+    border-left: 4px solid #e74c3c;
+}
+
+.notification.warning {
+    border-left: 4px solid #f39c12;
+}
+
+.notification.info {
+    border-left: 4px solid #3498db;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 `;
 document.head.appendChild(dynamicStyles);
