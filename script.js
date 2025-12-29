@@ -1,12 +1,7 @@
-// ============================================
-// LOGISTICS SORTING APPLICATION - FULL CLIENT SIDE
-// ============================================
-
-// Konfigurasi Aplikasi
 const CONFIG = {
     appName: "LogisticsSort",
     version: "1.0.0",
-    maxPackages: 1000,
+    maxPackages: 10000,
     algorithms: {
         'merge-iterative': { name: 'Merge Sort Iteratif', color: '#3498db', complexity: 'O(n log n)' },
         'merge-recursive': { name: 'Merge Sort Rekursif', color: '#e74c3c', complexity: 'O(n log n)' },
@@ -19,11 +14,10 @@ const CONFIG = {
         'weight': { name: 'Berat Paket', unit: 'kg', icon: 'fa-weight-hanging' },
         'priority': { name: 'Prioritas', unit: '', icon: 'fa-star' },
         'distance': { name: 'Jarak', unit: 'km', icon: 'fa-road' },
-        'time': { name: 'Waktu Estimasi', unit: 'jam', icon: 'fa-clock' }
+        'estimatedTime': { name: 'Waktu Estimasi', unit: 'jam', icon: 'fa-clock' }
     }
 };
 
-// Data Master
 const DATA = {
     cities: [
         'Jakarta', 'Surabaya', 'Bandung', 'Medan', 'Semarang',
@@ -51,7 +45,6 @@ const DATA = {
     ]
 };
 
-// State Aplikasi
 let AppState = {
     packages: [],
     sortedPackages: [],
@@ -59,7 +52,7 @@ let AppState = {
     currentPage: 1,
     itemsPerPage: 15,
     searchQuery: '',
-    displayMode: 'all', // 'all' or 'sorted'
+    displayMode: 'all',
     charts: {
         performance: null,
         complexity: null
@@ -67,37 +60,25 @@ let AppState = {
     testHistory: []
 };
 
-// ============================================
-// INITIALIZATION
-// ============================================
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log(`${CONFIG.appName} v${CONFIG.version} - Initializing...`);
     
-    // Setup event listeners
     setupEventListeners();
-    
-    // Initialize charts
     initializeCharts();
     
-    // Generate sample data
     setTimeout(() => {
         generatePackages(50);
         showNotification('Aplikasi siap digunakan!', 'success');
     }, 500);
     
-    // Update GitHub link
-    document.getElementById('github-repo').textContent = window.location.hostname.includes('github.io') 
-        ? window.location.hostname + window.location.pathname 
-        : 'github.com/username/logistics-sorting';
+    const githubLink = document.getElementById('github-repo');
+    if (githubLink) {
+        githubLink.textContent = 'https://github.com/FathirSureal/tugas_besar_Analisis_Kompleksitas_Algoritma';
+        githubLink.href = 'https://github.com/FathirSureal/tugas_besar_Analisis_Kompleksitas_Algoritma';
+    }
 });
 
-// ============================================
-// EVENT LISTENERS
-// ============================================
-
 function setupEventListeners() {
-    // Slider untuk jumlah paket
     const countSlider = document.getElementById('package-count');
     const countValue = document.getElementById('count-value');
     
@@ -105,30 +86,25 @@ function setupEventListeners() {
         countValue.textContent = this.value;
     });
     
-    // Tombol Generate Data
     document.getElementById('btn-generate').addEventListener('click', function() {
         const count = parseInt(countSlider.value);
         generatePackages(count);
     });
     
-    // Tombol Jalankan Sorting
     document.getElementById('btn-sort').addEventListener('click', function() {
         runSelectedAlgorithm();
     });
     
-    // Tombol Bandingkan Semua
     document.getElementById('btn-compare').addEventListener('click', function() {
         compareAllAlgorithms();
     });
     
-    // Tombol Reset
     document.getElementById('btn-reset').addEventListener('click', function() {
         if (confirm('Reset semua data dan hasil?')) {
             resetApplication();
         }
     });
     
-    // Tombol Tampilkan Semua/Terurut
     document.getElementById('btn-show-all').addEventListener('click', function() {
         AppState.displayMode = 'all';
         updatePackageTable();
@@ -141,14 +117,12 @@ function setupEventListeners() {
         updateTableControls();
     });
     
-    // Pencarian
     document.getElementById('search-package').addEventListener('input', function(e) {
         AppState.searchQuery = e.target.value.toLowerCase();
         AppState.currentPage = 1;
         updatePackageTable();
     });
     
-    // Pagination
     document.getElementById('btn-prev').addEventListener('click', function() {
         if (AppState.currentPage > 1) {
             AppState.currentPage--;
@@ -164,15 +138,10 @@ function setupEventListeners() {
         }
     });
     
-    // Tombol Deploy Guide
     document.getElementById('btn-deploy').addEventListener('click', function() {
         showDeployGuide();
     });
 }
-
-// ============================================
-// DATA GENERATION
-// ============================================
 
 function generatePackages(count) {
     showLoading(`Membuat ${count} data paket logistik...`);
@@ -208,13 +177,11 @@ function generatePackages(count) {
         AppState.packages.push(packageData);
     }
     
-    // Reset state
     AppState.sortedPackages = [...AppState.packages];
     AppState.currentPage = 1;
     AppState.searchQuery = '';
     AppState.displayMode = 'all';
     
-    // Update UI
     updateDashboard();
     updatePackageTable();
     updateTableControls();
@@ -222,15 +189,9 @@ function generatePackages(count) {
     
     showNotification(`Berhasil membuat ${count} paket logistik!`, 'success');
     
-    // Log untuk debugging
     console.log(`Generated ${count} packages:`, AppState.packages.slice(0, 3));
 }
 
-// ============================================
-// SORTING ALGORITHMS
-// ============================================
-
-// Merge Sort Iteratif
 function mergeSortIterative(arr, key) {
     const n = arr.length;
     const sorted = [...arr];
@@ -240,7 +201,6 @@ function mergeSortIterative(arr, key) {
             const mid = Math.min(left + size, n);
             const right = Math.min(left + 2 * size, n);
             
-            // Merge process
             let i = left, j = mid, k = 0;
             const temp = [];
             
@@ -264,7 +224,6 @@ function mergeSortIterative(arr, key) {
     return sorted;
 }
 
-// Merge Sort Rekursif
 function mergeSortRecursive(arr, key) {
     if (arr.length <= 1) return arr;
     
@@ -290,7 +249,6 @@ function merge(left, right, key) {
     return result.concat(left.slice(i)).concat(right.slice(j));
 }
 
-// Quick Sort
 function quickSort(arr, key) {
     if (arr.length <= 1) return arr;
     
@@ -308,7 +266,6 @@ function quickSort(arr, key) {
     return [...quickSort(left, key), ...equal, ...quickSort(right, key)];
 }
 
-// Bubble Sort
 function bubbleSort(arr, key) {
     const sorted = [...arr];
     const n = sorted.length;
@@ -324,7 +281,6 @@ function bubbleSort(arr, key) {
     return sorted;
 }
 
-// Insertion Sort
 function insertionSort(arr, key) {
     const sorted = [...arr];
     
@@ -343,7 +299,6 @@ function insertionSort(arr, key) {
     return sorted;
 }
 
-// Selection Sort
 function selectionSort(arr, key) {
     const sorted = [...arr];
     
@@ -363,10 +318,6 @@ function selectionSort(arr, key) {
     
     return sorted;
 }
-
-// ============================================
-// SORTING EXECUTION
-// ============================================
 
 function runSelectedAlgorithm() {
     if (AppState.packages.length === 0) {
@@ -410,21 +361,17 @@ function runSelectedAlgorithm() {
         const endTime = performance.now();
         const executionTime = endTime - startTime;
         
-        // Simpan hasil
         AppState.results[algorithmId] = {
             time: executionTime,
             sorted: sortedResult
         };
         
-        // Update sorted packages untuk display
         AppState.sortedPackages = sortedResult;
         
-        // Update UI
         updateAlgorithmResult(algorithmId, executionTime);
         updateCharts();
         hideLoading();
         
-        // Update table jika mode sorted
         if (AppState.displayMode === 'sorted') {
             updatePackageTable();
         }
@@ -486,12 +433,10 @@ function compareAllAlgorithms() {
                 sorted: sortedResult
             };
             
-            // Update UI progress
             completed++;
             updateProgress((completed / algorithms.length) * 100);
             updateAlgorithmResult(algoId, executionTime);
             
-            // Jika semua selesai
             if (completed === algorithms.length) {
                 setTimeout(() => {
                     hideLoading();
@@ -500,13 +445,9 @@ function compareAllAlgorithms() {
                     showNotification('Perbandingan semua algoritma selesai!', 'success');
                 }, 500);
             }
-        }, index * 300); // Delay untuk visual effect
+        }, index * 300);
     });
 }
-
-// ============================================
-// UI UPDATE FUNCTIONS
-// ============================================
 
 function updateDashboard() {
     if (AppState.packages.length === 0) {
@@ -682,7 +623,6 @@ function updatePackageTable() {
 function getDisplayPackages() {
     let packages = AppState.displayMode === 'sorted' ? AppState.sortedPackages : AppState.packages;
     
-    // Filter berdasarkan search query
     if (AppState.searchQuery) {
         packages = packages.filter(pkg => 
             pkg.name.toLowerCase().includes(AppState.searchQuery) ||
@@ -705,7 +645,6 @@ function updateTableInfo() {
     document.getElementById('showing-count').textContent = `${startIdx}-${endIdx}`;
     document.getElementById('total-count').textContent = packages.length;
     
-    // Update pagination buttons
     document.getElementById('btn-prev').disabled = AppState.currentPage <= 1;
     document.getElementById('btn-next').disabled = AppState.currentPage >= totalPages;
 }
@@ -723,12 +662,7 @@ function updateTableControls() {
     }
 }
 
-// ============================================
-// CHARTS
-// ============================================
-
 function initializeCharts() {
-    // Performance Chart
     const perfCtx = document.getElementById('chart-performance').getContext('2d');
     AppState.charts.performance = new Chart(perfCtx, {
         type: 'bar',
@@ -776,7 +710,6 @@ function initializeCharts() {
         }
     });
     
-    // Complexity Chart
     const compCtx = document.getElementById('chart-complexity').getContext('2d');
     AppState.charts.complexity = new Chart(compCtx, {
         type: 'line',
@@ -839,7 +772,6 @@ function initializeCharts() {
 }
 
 function updateCharts() {
-    // Update performance chart
     if (AppState.charts.performance) {
         const perfData = Object.keys(CONFIG.algorithms).map(algoId => {
             return AppState.results[algoId] ? AppState.results[algoId].time : 0;
@@ -849,10 +781,6 @@ function updateCharts() {
         AppState.charts.performance.update();
     }
 }
-
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
 
 function showLoading(message, showProgress = false) {
     const overlay = document.getElementById('loading');
@@ -915,14 +843,12 @@ function showNotification(message, type = 'info') {
     
     container.appendChild(notification);
     
-    // Auto remove after 5 seconds
     setTimeout(() => {
         notification.style.opacity = '0';
         notification.style.transform = 'translateX(100%)';
         setTimeout(() => notification.remove(), 300);
     }, 5000);
     
-    // Close button
     notification.querySelector('.notification-close').addEventListener('click', () => {
         notification.style.opacity = '0';
         notification.style.transform = 'translateX(100%)';
@@ -943,12 +869,10 @@ function resetApplication() {
         testHistory: []
     };
     
-    // Reset UI
     updateDashboard();
     updatePackageTable();
     updateTableControls();
     
-    // Reset algorithm results
     Object.keys(CONFIG.algorithms).forEach(algoId => {
         const algoName = algoId.split('-')[1] || algoId;
         const timeElement = document.getElementById(`time-${algoName}`);
@@ -966,13 +890,11 @@ function resetApplication() {
         }
     });
     
-    // Reset comparison
     document.getElementById('comparison-result').innerHTML = `
         <h3><i class="fas fa-trophy"></i> Hasil Perbandingan</h3>
         <p>Jalankan "Bandingkan Semua" untuk melihat perbandingan lengkap</p>
     `;
     
-    // Reset charts
     updateCharts();
     
     showNotification('Aplikasi telah direset', 'info');
@@ -983,13 +905,13 @@ function showDeployGuide() {
         <h3><i class="fas fa-cloud-upload-alt"></i> Panduan Deploy ke GitHub Pages</h3>
         <div class="deploy-steps">
             <ol>
-                <li>Buat repository baru di GitHub (nama: logistics-sorting)</li>
-                <li>Upload semua file ke repository</li>
-                <li>Buka Settings → Pages</li>
-                <li>Pilih: Source → Deploy from a branch</li>
-                <li>Branch: main, Folder: / (root)</li>
-                <li>Save, tunggu beberapa menit</li>
-                <li>Akses di: https://username.github.io/logistics-sorting</li>
+                <li>Buka: https://github.com/FathirSureal/tugas_besar_Analisis_Kompleksitas_Algoritma</li>
+                <li>Klik tombol "Settings" di bagian atas repository</li>
+                <li>Pilih "Pages" di menu sebelah kiri</li>
+                <li>Pada "Source", pilih "Deploy from a branch"</li>
+                <li>Pada "Branch", pilih "main" dan folder "/ (root)"</li>
+                <li>Klik "Save" dan tunggu beberapa menit</li>
+                <li>Akses aplikasi di: https://fathirsureal.github.io/tugas_besar_Analisis_Kompleksitas_Algoritma</li>
             </ol>
         </div>
         <p><strong>Note:</strong> Aplikasi ini 100% client-side, tidak butuh backend!</p>
@@ -997,10 +919,6 @@ function showDeployGuide() {
     
     showNotification(guide, 'info');
 }
-
-// ============================================
-// STYLES DINAMIS (diinject ke DOM)
-// ============================================
 
 const dynamicStyles = document.createElement('style');
 dynamicStyles.textContent = `
