@@ -1,6 +1,3 @@
-// ============================================
-// LOGISTICS SORTING APPLICATION - FULL CLIENT SIDE
-// ============================================
 
 // Konfigurasi Aplikasi
 const CONFIG = {
@@ -67,9 +64,7 @@ let AppState = {
     testHistory: []
 };
 
-// ============================================
-// INITIALIZATION
-// ============================================
+// Initialization
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log(`${CONFIG.appName} v${CONFIG.version} - Initializing...`);
@@ -92,9 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
         : 'github.com/username/logistics-sorting';
 });
 
-// ============================================
-// EVENT LISTENERS
-// ============================================
+// Event Listeners
 
 function setupEventListeners() {
     // Slider untuk jumlah paket
@@ -170,9 +163,7 @@ function setupEventListeners() {
     });
 }
 
-// ============================================
-// DATA GENERATION
-// ============================================
+// Data Generation
 
 function generatePackages(count) {
     showLoading(`Membuat ${count} data paket logistik...`);
@@ -226,9 +217,7 @@ function generatePackages(count) {
     console.log(`Generated ${count} packages:`, AppState.packages.slice(0, 3));
 }
 
-// ============================================
-// SORTING ALGORITHMS
-// ============================================
+// Sorting Algortithm
 
 // Merge Sort Iteratif
 function mergeSortIterative(arr, key) {
@@ -364,9 +353,7 @@ function selectionSort(arr, key) {
     return sorted;
 }
 
-// ============================================
-// SORTING EXECUTION
-// ============================================
+// Sorting Exe
 
 function runSelectedAlgorithm() {
     if (AppState.packages.length === 0) {
@@ -504,9 +491,7 @@ function compareAllAlgorithms() {
     });
 }
 
-// ============================================
-// UI UPDATE FUNCTIONS
-// ============================================
+// UI update
 
 function updateDashboard() {
     if (AppState.packages.length === 0) {
@@ -723,9 +708,7 @@ function updateTableControls() {
     }
 }
 
-// ============================================
-// CHARTS
-// ============================================
+// Charts
 
 function initializeCharts() {
     // Performance Chart
@@ -850,9 +833,7 @@ function updateCharts() {
     }
 }
 
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
+// Util Function
 
 function showLoading(message, showProgress = false) {
     const overlay = document.getElementById('loading');
@@ -998,9 +979,7 @@ function showDeployGuide() {
     showNotification(guide, 'info');
 }
 
-// ============================================
-// STYLES DINAMIS (diinject ke DOM)
-// ============================================
+// Dynamic Style (diinject ke DOM)
 
 const dynamicStyles = document.createElement('style');
 dynamicStyles.textContent = `
@@ -1095,5 +1074,6 @@ dynamicStyles.textContent = `
 }
 `;
 document.head.appendChild(dynamicStyles);
+
 
 console.log(`${CONFIG.appName} initialized successfully!`);
