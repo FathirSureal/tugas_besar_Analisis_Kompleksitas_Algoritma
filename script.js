@@ -3,7 +3,7 @@
 const CONFIG = {
     appName: "LogisticsSort",
     version: "1.0.0",
-    maxPackages: 1000,
+    maxPackages: 10000,
     algorithms: {
         'merge-iterative': { name: 'Merge Sort Iteratif', color: '#3498db', complexity: 'O(n log n)' },
         'merge-recursive': { name: 'Merge Sort Rekursif', color: '#e74c3c', complexity: 'O(n log n)' },
@@ -1077,3 +1077,4 @@ document.head.appendChild(dynamicStyles);
 
 
 console.log(`${CONFIG.appName} initialized successfully!`);
+
