@@ -3,300 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sorting Paket Logistik - Tugas Besar Algoritma</title>
+    <title>Sorting Paket Logistik - Tugas Algoritma</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
             <div class="logo">
-                <i class="fas fa-shipping-fast"></i>
-                <h1>Logistics<span>Sort</span></h1>
-                <span class="badge">Tugas Besar Algoritma</span>
-            </div>
-            <p class="tagline">Analisis Perbandingan Algoritma Sorting untuk Sistem Logistik Paket</p>
-        </div>
-    </header>
-
-    <!-- Dashboard Stats -->
-    <section class="dashboard">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-boxes"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Total Paket</h3>
-                        <p id="total-packages">0</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-weight-hanging"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Rata-rata Berat</h3>
-                        <p id="avg-weight">0 kg</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-road"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Total Jarak</h3>
-                        <p id="total-distance">0 km</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Waktu Total</h3>
-                        <p id="total-time">0 jam</p>
-                    </div>
+                <i class="fas fa-truck"></i>
+                <div>
+                    <h1>Logistics<span>Sort</span></h1>
+                    <p class="subtitle">Analisis Algoritma Sorting untuk Logistik Paket</p>
+                    <p class="badge">Tugas Besar Analisis Kompleksitas Algoritma</p>
                 </div>
             </div>
-        </div>
-    </section>
+            <div class="header-info">
+                <div class="info-item">
+                    <i class="fas fa-code-branch"></i>
+                    <span>100% Client-side</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-cloud"></i>
+                    <span>Siap GitHub Pages</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-bolt"></i>
+                    <span>No API Required</span>
+                </div>
+            </div>
+        </header>
 
-    <!-- Control Panel -->
-    <section class="control-panel">
-        <div class="container">
-            <h2><i class="fas fa-cogs"></i> Kontrol Data & Sorting</h2>
+        <!-- Dashboard Stats -->
+        <section class="stats">
+            <div class="stat-card">
+                <i class="fas fa-boxes"></i>
+                <div>
+                    <h3>Total Paket</h3>
+                    <p id="stat-packages">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-weight-hanging"></i>
+                <div>
+                    <h3>Rata-rata Berat</h3>
+                    <p id="stat-weight">0 kg</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-road"></i>
+                <div>
+                    <h3>Total Jarak</h3>
+                    <p id="stat-distance">0 km</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <h3>Waktu Total</h3>
+                    <p id="stat-time">0 jam</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Control Panel -->
+        <section class="control-panel">
+            <h2><i class="fas fa-sliders-h"></i> Kontrol & Konfigurasi</h2>
             
-            <div class="control-grid">
+            <div class="controls-grid">
                 <div class="control-group">
-                    <label for="data-size"><i class="fas fa-boxes"></i> Jumlah Paket</label>
-                    <div class="range-container">
-                        <input type="range" id="data-size" min="10" max="1000" value="100" class="slider">
-                        <span class="range-value" id="size-value">100</span>
+                    <label for="package-count">
+                        <i class="fas fa-box-open"></i> Jumlah Paket
+                    </label>
+                    <div class="slider-container">
+                        <input type="range" id="package-count" min="10" max="1000" value="100" class="slider">
+                        <div class="slider-info">
+                            <span id="count-value">100</span>
+                            <span class="slider-min">10</span>
+                            <span class="slider-max">1000</span>
+                        </div>
                     </div>
                 </div>
-                
+
                 <div class="control-group">
-                    <label for="sort-algorithm"><i class="fas fa-sort-amount-down"></i> Algoritma</label>
-                    <select id="sort-algorithm">
+                    <label for="sort-type">
+                        <i class="fas fa-sort-amount-down"></i> Jenis Sorting
+                    </label>
+                    <select id="sort-type">
+                        <option value="weight">Berdasarkan Berat (kg)</option>
+                        <option value="priority">Berdasarkan Prioritas (1-5)</option>
+                        <option value="distance">Berdasarkan Jarak (km)</option>
+                        <option value="time">Berdasarkan Waktu (jam)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="algorithm">
+                        <i class="fas fa-code"></i> Algoritma
+                    </label>
+                    <select id="algorithm">
                         <option value="merge-iterative">Merge Sort (Iteratif)</option>
                         <option value="merge-recursive">Merge Sort (Rekursif)</option>
                         <option value="quick">Quick Sort</option>
                         <option value="bubble">Bubble Sort</option>
-                    </select>
-                </div>
-                
-                <div class="control-group">
-                    <label for="sort-by"><i class="fas fa-filter"></i> Sortir Berdasarkan</label>
-                    <select id="sort-by">
-                        <option value="weight">Berat (kg)</option>
-                        <option value="priority">Prioritas (1-5)</option>
-                        <option value="distance">Jarak (km)</option>
-                        <option value="time">Estimasi Waktu (jam)</option>
+                        <option value="insertion">Insertion Sort</option>
+                        <option value="selection">Selection Sort</option>
                     </select>
                 </div>
             </div>
-            
+
             <div class="button-group">
-                <button id="generate-btn" class="btn btn-primary">
-                    <i class="fas fa-magic"></i> Generate Data
+                <button id="btn-generate" class="btn btn-primary">
+                    <i class="fas fa-database"></i> Generate Data Paket
                 </button>
-                <button id="sort-btn" class="btn btn-success">
+                <button id="btn-sort" class="btn btn-success">
                     <i class="fas fa-play"></i> Jalankan Sorting
                 </button>
-                <button id="reset-btn" class="btn btn-danger">
-                    <i class="fas fa-redo"></i> Reset
+                <button id="btn-compare" class="btn btn-warning">
+                    <i class="fas fa-balance-scale"></i> Bandingkan Semua
                 </button>
-                <button id="batch-test-btn" class="btn btn-warning">
-                    <i class="fas fa-chart-line"></i> Uji Batch
+                <button id="btn-reset" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Reset Semua
                 </button>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Algorithm Comparison -->
-    <section class="algorithms">
-        <div class="container">
-            <h2><i class="fas fa-balance-scale"></i> Perbandingan Algoritma</h2>
+        <!-- Results Panel -->
+        <section class="results">
+            <h2><i class="fas fa-chart-line"></i> Hasil Sorting</h2>
             
-            <div class="algorithm-cards">
-                <div class="algorithm-card">
+            <div class="results-grid">
+                <div class="result-card">
                     <h3><i class="fas fa-sync-alt"></i> Merge Sort Iteratif</h3>
                     <div class="complexity">
-                        <span class="badge time">O(n log n)</span>
-                        <span class="badge space">O(n)</span>
+                        <span class="badge badge-success">O(n log n)</span>
+                        <span class="badge badge-info">O(n) space</span>
                     </div>
-                    <div class="result">
-                        <p>Waktu: <span id="time-iterative">- ms</span></p>
-                        <p>Paket Terurut: <span id="count-iterative">0</span></p>
-                    </div>
-                    <div class="pros-cons">
-                        <p><i class="fas fa-check"></i> Stabil, no stack overflow</p>
-                        <p><i class="fas fa-times"></i> Memory O(n) ekstra</p>
+                    <div class="result-info">
+                        <p><i class="fas fa-clock"></i> Waktu: <span id="time-iterative">- ms</span></p>
+                        <p><i class="fas fa-check-circle"></i> Status: <span id="status-iterative">Belum dijalankan</span></p>
                     </div>
                 </div>
-                
-                <div class="algorithm-card">
+
+                <div class="result-card">
                     <h3><i class="fas fa-code-branch"></i> Merge Sort Rekursif</h3>
                     <div class="complexity">
-                        <span class="badge time">O(n log n)</span>
-                        <span class="badge space">O(n) + stack</span>
+                        <span class="badge badge-success">O(n log n)</span>
+                        <span class="badge badge-warning">+ stack O(log n)</span>
                     </div>
-                    <div class="result">
-                        <p>Waktu: <span id="time-recursive">- ms</span></p>
-                        <p>Paket Terurut: <span id="count-recursive">0</span></p>
-                    </div>
-                    <div class="pros-cons">
-                        <p><i class="fas fa-check"></i> Code lebih clean</p>
-                        <p><i class="fas fa-times"></i> Risk stack overflow</p>
+                    <div class="result-info">
+                        <p><i class="fas fa-clock"></i> Waktu: <span id="time-recursive">- ms</span></p>
+                        <p><i class="fas fa-check-circle"></i> Status: <span id="status-recursive">Belum dijalankan</span></p>
                     </div>
                 </div>
-                
-                <div class="algorithm-card">
+
+                <div class="result-card">
                     <h3><i class="fas fa-bolt"></i> Quick Sort</h3>
                     <div class="complexity">
-                        <span class="badge time">O(n log n)</span>
-                        <span class="badge space">O(log n)</span>
+                        <span class="badge badge-success">O(n log n)</span>
+                        <span class="badge badge-info">O(log n) space</span>
                     </div>
-                    <div class="result">
-                        <p>Waktu: <span id="time-quick">- ms</span></p>
-                        <p>Paket Terurut: <span id="count-quick">0</span></p>
-                    </div>
-                    <div class="pros-cons">
-                        <p><i class="fas fa-check"></i> Paling cepat rata-rata</p>
-                        <p><i class="fas fa-times"></i> Worst case O(n²)</p>
+                    <div class="result-info">
+                        <p><i class="fas fa-clock"></i> Waktu: <span id="time-quick">- ms</span></p>
+                        <p><i class="fas fa-check-circle"></i> Status: <span id="status-quick">Belum dijalankan</span></p>
                     </div>
                 </div>
-                
-                <div class="algorithm-card">
+
+                <div class="result-card">
                     <h3><i class="fas fa-wind"></i> Bubble Sort</h3>
                     <div class="complexity">
-                        <span class="badge time">O(n²)</span>
-                        <span class="badge space">O(1)</span>
+                        <span class="badge badge-danger">O(n²)</span>
+                        <span class="badge badge-success">O(1) space</span>
                     </div>
-                    <div class="result">
-                        <p>Waktu: <span id="time-bubble">- ms</span></p>
-                        <p>Paket Terurut: <span id="count-bubble">0</span></p>
-                    </div>
-                    <div class="pros-cons">
-                        <p><i class="fas fa-check"></i> Simple implementasi</p>
-                        <p><i class="fas fa-times"></i> Sangat lambat</p>
+                    <div class="result-info">
+                        <p><i class="fas fa-clock"></i> Waktu: <span id="time-bubble">- ms</span></p>
+                        <p><i class="fas fa-check-circle"></i> Status: <span id="status-bubble">Belum dijalankan</span></p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Charts -->
-    <section class="charts">
-        <div class="container">
-            <h2><i class="fas fa-chart-area"></i> Visualisasi Performance</h2>
+            <div class="comparison-result" id="comparison-result">
+                <h3><i class="fas fa-trophy"></i> Hasil Perbandingan</h3>
+                <p>Jalankan "Bandingkan Semua" untuk melihat perbandingan lengkap</p>
+            </div>
+        </section>
+
+        <!-- Charts -->
+        <section class="charts">
+            <h2><i class="fas fa-chart-bar"></i> Visualisasi Data</h2>
             
-            <div class="chart-container">
-                <div class="chart-box">
+            <div class="charts-grid">
+                <div class="chart-container">
                     <h3>Waktu Eksekusi per Algoritma</h3>
-                    <canvas id="performanceChart"></canvas>
+                    <canvas id="chart-performance"></canvas>
                 </div>
-                <div class="chart-box">
+                <div class="chart-container">
                     <h3>Perbandingan Kompleksitas</h3>
-                    <canvas id="complexityChart"></canvas>
+                    <canvas id="chart-complexity"></canvas>
                 </div>
             </div>
-            
-            <div class="chart-controls">
-                <button id="update-chart" class="btn btn-info">
-                    <i class="fas fa-sync"></i> Update Chart
-                </button>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Package Table -->
-    <section class="package-table">
-        <div class="container">
+        <!-- Package Table -->
+        <section class="data-table">
             <h2><i class="fas fa-table"></i> Data Paket Logistik</h2>
+            
+            <div class="table-controls">
+                <button id="btn-show-all" class="btn btn-sm">
+                    <i class="fas fa-eye"></i> Tampilkan Semua
+                </button>
+                <button id="btn-show-sorted" class="btn btn-sm">
+                    <i class="fas fa-sort"></i> Tampilkan Terurut
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-package" placeholder="Cari paket...">
+                </div>
+            </div>
+
             <div class="table-wrapper">
-                <table id="packages-table">
+                <table id="package-table">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Nama Paket</th>
-                            <th>Berat (kg)</th>
+                            <th>Berat</th>
                             <th>Jenis</th>
                             <th>Prioritas</th>
-                            <th>Asal → Tujuan</th>
-                            <th>Jarak (km)</th>
-                            <th>Estimasi</th>
+                            <th>Rute</th>
+                            <th>Jarak</th>
+                            <th>Waktu</th>
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody id="packages-body">
-                        <!-- Data akan dimasukkan via JavaScript -->
+                    <tbody id="table-body">
                         <tr>
-                            <td colspan="9" class="empty">Klik "Generate Data" untuk membuat data paket</td>
+                            <td colspan="9" class="empty">
+                                <i class="fas fa-box-open"></i>
+                                <p>Generate data paket terlebih dahulu</p>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
-    </section>
+            
+            <div class="table-footer">
+                <div class="pagination">
+                    <button id="btn-prev" class="btn-pagination" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span id="page-info">Halaman 1 dari 1</span>
+                    <button id="btn-next" class="btn-pagination" disabled>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="table-stats">
+                    Menampilkan <span id="showing-count">0</span> dari <span id="total-count">0</span> paket
+                </div>
+            </div>
+        </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
+        <!-- Footer -->
+        <footer class="footer">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3><i class="fas fa-university"></i> Tugas Besar</h3>
-                    <p>Analisis Kompleksitas Algoritma</p>
+                    <h4><i class="fas fa-info-circle"></i> Tentang</h4>
+                    <p>Aplikasi ini dibuat untuk Tugas Besar Analisis Kompleksitas Algoritma</p>
                     <p>Semester Ganjil 2025/2026</p>
                 </div>
                 <div class="footer-section">
-                    <h3><i class="fas fa-users"></i> Kelompok</h3>
-                    <p>Implementasi & Analisis</p>
-                    <p>Algoritma Sorting</p>
+                    <h4><i class="fas fa-cogs"></i> Teknologi</h4>
+                    <p>HTML5, CSS3, JavaScript</p>
+                    <p>Chart.js, Font Awesome</p>
+                    <p>100% Client-side</p>
                 </div>
                 <div class="footer-section">
-                    <h3><i class="fas fa-code"></i> Teknologi</h3>
-                    <p>HTML5, CSS3, JavaScript</p>
-                    <p>Chart.js, GitHub Pages</p>
+                    <h4><i class="fas fa-share-alt"></i> Deploy</h4>
+                    <p>Siap di-deploy ke:</p>
+                    <p>GitHub Pages, Netlify, Vercel</p>
+                    <button id="btn-deploy" class="btn btn-sm">
+                        <i class="fas fa-cloud-upload-alt"></i> Panduan Deploy
+                    </button>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 - Sorting Paket Logistik | Dibuat untuk tujuan akademis</p>
-                <p class="deploy-info">
-                    <i class="fas fa-cloud"></i> Deployed on GitHub Pages | 
-                    <a href="#" id="source-code"><i class="fab fa-github"></i> Source Code</a>
+                <p>&copy; 2025 - Sorting Paket Logistik | Tugas Besar Algoritma</p>
+                <p class="github-link">
+                    <i class="fab fa-github"></i>
+                    <a href="#" id="github-repo">github.com/username/logistics-sorting</a>
                 </p>
             </div>
-        </div>
-    </footer>
+        </footer>
+    </div>
 
-    <!-- Loading Modal -->
-    <div id="loading-modal" class="modal">
-        <div class="modal-content">
-            <div class="loader">
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner">
                 <i class="fas fa-spinner fa-spin fa-3x"></i>
-                <h3 id="loading-message">Memproses...</h3>
-                <div class="progress">
-                    <div class="progress-bar" id="progress-bar"></div>
-                </div>
-                <p id="loading-detail"></p>
             </div>
+            <h3 id="loading-text">Memproses...</h3>
+            <div class="progress">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p id="loading-detail">Harap tunggu</p>
         </div>
     </div>
 
-    <!-- Results Modal -->
-    <div id="results-modal" class="modal">
-        <div class="modal-content large">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-chart-bar"></i> Hasil Analisis</h2>
-            <div id="results-content"></div>
-        </div>
-    </div>
+    <!-- Notification Container -->
+    <div id="notifications"></div>
 
     <script src="script.js"></script>
 </body>
