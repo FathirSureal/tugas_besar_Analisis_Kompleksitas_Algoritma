@@ -1,885 +1,837 @@
-// ============================================
-// MAIN APPLICATION - SORTING PAKET LOGISTIK
-// ============================================
-
-// Konfigurasi
-const CONFIG = {
-    maxPackages: 1000,
-    algorithms: {
-        'merge-iterative': { name: 'Merge Sort (Iteratif)', color: '#3498db' },
-        'merge-recursive': { name: 'Merge Sort (Rekursif)', color: '#e74c3c' },
-        'quick': { name: 'Quick Sort', color: '#27ae60' },
-        'bubble': { name: 'Bubble Sort', color: '#f39c12' }
-    }
-};
-
-// State aplikasi
-let state = {
-    packages: [],
-    results: {},
-    charts: {
-        performance: null,
-        complexity: null
-    },
-    testResults: []
-};
-
-// Data kota di Indonesia untuk asal & tujuan
-const INDONESIAN_CITIES = [
-    'Jakarta', 'Surabaya', 'Bandung', 'Medan', 'Semarang',
-    'Makassar', 'Palembang', 'Denpasar', 'Yogyakarta', 'Malang',
-    'Bekasi', 'Tangerang', 'Depok', 'Bogor', 'Surakarta',
-    'Pontianak', 'Manado', 'Balikpapan', 'Samarinda', 'Padang'
-];
-
-const PACKAGE_TYPES = [
-    { name: 'Dokumen', minWeight: 0.1, maxWeight: 1, color: '#3498db' },
-    { name: 'Kecil', minWeight: 1, maxWeight: 5, color: '#27ae60' },
-    { name: 'Sedang', minWeight: 5, maxWeight: 20, color: '#f39c12' },
-    { name: 'Besar', minWeight: 20, maxWeight: 50, color: '#e74c3c' },
-    { name: 'Sangat Besar', minWeight: 50, maxWeight: 100, color: '#9b59b6' }
-];
-
-const PACKAGE_NAMES = [
-    'Paket Express', 'Kiriman Cepat', 'Logistik Prioritas',
-    'Pengiriman Reguler', 'Kargo Berat', 'Dokumen Penting',
-    'Barang Pecah Belah', 'Elektronik', 'Pakaian', 'Makanan',
-    'Obat-obatan', 'Perhiasan', 'Buku', 'Alat Kantor', 'Sparepart'
-];
-
-// Inisialisasi aplikasi
-document.addEventListener('DOMContentLoaded', function() {
-    initApp();
-});
-
-function initApp() {
-    // Setup event listeners
-    setupEventListeners();
-    
-    // Setup charts
-    setupCharts();
-    
-    // Load sample data
-    setTimeout(() => {
-        generatePackages(50);
-    }, 500);
+/* ===== RESET & BASE ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-function setupEventListeners() {
-    // Slider untuk jumlah paket
-    const sizeSlider = document.getElementById('data-size');
-    const sizeValue = document.getElementById('size-value');
-    
-    sizeSlider.addEventListener('input', function() {
-        sizeValue.textContent = this.value;
-    });
-    
-    // Tombol generate
-    document.getElementById('generate-btn').addEventListener('click', function() {
-        const size = parseInt(sizeSlider.value);
-        generatePackages(size);
-    });
-    
-    // Tombol sort
-    document.getElementById('sort-btn').addEventListener('click', function() {
-        runSorting();
-    });
-    
-    // Tombol reset
-    document.getElementById('reset-btn').addEventListener('click', function() {
-        resetApplication();
-    });
-    
-    // Tombol batch test
-    document.getElementById('batch-test-btn').addEventListener('click', function() {
-        runBatchTest();
-    });
-    
-    // Tombol update chart
-    document.getElementById('update-chart').addEventListener('click', function() {
-        updateCharts();
-    });
-    
-    // Tombol source code
-    document.getElementById('source-code').addEventListener('click', function(e) {
-        e.preventDefault();
-        window.open('https://github.com/yourusername/logistics-sorting', '_blank');
-    });
-    
-    // Modal close buttons
-    document.querySelectorAll('.close').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.getElementById('results-modal').style.display = 'none';
-        });
-    });
-    
-    // Close modal on outside click
-    window.addEventListener('click', function(e) {
-        const modal = document.getElementById('results-modal');
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
+:root {
+    --primary: #2c3e50;
+    --secondary: #3498db;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --danger: #e74c3c;
+    --info: #9b59b6;
+    --light: #ecf0f1;
+    --dark: #2c3e50;
+    --gray: #95a5a6;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --radius: 12px;
+    --transition: all 0.3s ease;
 }
 
-// ============================================
-// DATA GENERATION FUNCTIONS
-// ============================================
-
-function generatePackages(count) {
-    showLoading(`Membuat ${count} data paket...`);
-    
-    state.packages = [];
-    
-    for (let i = 0; i < count; i++) {
-        const packageType = PACKAGE_TYPES[Math.floor(Math.random() * PACKAGE_TYPES.length)];
-        const weight = (Math.random() * (packageType.maxWeight - packageType.minWeight) + packageType.minWeight).toFixed(2);
-        
-        const packageData = {
-            id: i + 1,
-            name: `${PACKAGE_NAMES[Math.floor(Math.random() * PACKAGE_NAMES.length)]} #${String(i + 1).padStart(4, '0')}`,
-            weight: parseFloat(weight),
-            type: packageType.name,
-            typeColor: packageType.color,
-            priority: Math.floor(Math.random() * 5) + 1,
-            origin: INDONESIAN_CITIES[Math.floor(Math.random() * INDONESIAN_CITIES.length)],
-            destination: INDONESIAN_CITIES[Math.floor(Math.random() * INDONESIAN_CITIES.length)],
-            distance: Math.floor(Math.random() * 990) + 10,
-            estimatedTime: Math.floor(Math.random() * 71) + 1,
-            status: ['pending', 'processing', 'delivered'][Math.floor(Math.random() * 3)],
-            date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000)
-        };
-        
-        // Pastikan asal dan tujuan berbeda
-        while (packageData.origin === packageData.destination) {
-            packageData.destination = INDONESIAN_CITIES[Math.floor(Math.random() * INDONESIAN_CITIES.length)];
-        }
-        
-                state.packages.push(packageData);
-    }
-    
-    // Update UI
-    updateDashboard();
-    updatePackageTable();
-    hideLoading();
-    
-    showNotification(`Berhasil membuat ${count} paket logistik!`, 'success');
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
 }
 
-// ============================================
-// SORTING ALGORITHMS IMPLEMENTATION
-// ============================================
-
-// Merge Sort Iteratif
-function mergeSortIterative(arr, key) {
-    const n = arr.length;
-    const sorted = [...arr];
-    
-    for (let size = 1; size < n; size *= 2) {
-        for (let left = 0; left < n; left += 2 * size) {
-            const mid = Math.min(left + size, n);
-            const right = Math.min(left + 2 * size, n);
-            
-            // Merge
-            let i = left, j = mid, k = 0;
-            const temp = [];
-            
-            while (i < mid && j < right) {
-                if (sorted[i][key] <= sorted[j][key]) {
-                    temp.push(sorted[i++]);
-                } else {
-                    temp.push(sorted[j++]);
-                }
-            }
-            
-            while (i < mid) temp.push(sorted[i++]);
-            while (j < right) temp.push(sorted[j++]);
-            
-            for (let m = 0; m < temp.length; m++) {
-                sorted[left + m] = temp[m];
-            }
-        }
-    }
-    
-    return sorted;
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
 }
 
-// Merge Sort Rekursif
-function mergeSortRecursive(arr, key) {
-    if (arr.length <= 1) return arr;
-    
-    const mid = Math.floor(arr.length / 2);
-    const left = mergeSortRecursive(arr.slice(0, mid), key);
-    const right = mergeSortRecursive(arr.slice(mid), key);
-    
-    return merge(left, right, key);
+/* ===== HEADER ===== */
+.header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
-function merge(left, right, key) {
-    const result = [];
-    let i = 0, j = 0;
-    
-    while (i < left.length && j < right.length) {
-        if (left[i][key] <= right[j][key]) {
-            result.push(left[i++]);
-        } else {
-            result.push(right[j++]);
-        }
-    }
-    
-    return result.concat(left.slice(i)).concat(right.slice(j));
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
-// Quick Sort
-function quickSort(arr, key) {
-    if (arr.length <= 1) return arr;
-    
-    const pivot = arr[Math.floor(arr.length / 2)][key];
-    const left = [];
-    const right = [];
-    const equal = [];
-    
-    for (const item of arr) {
-        if (item[key] < pivot) left.push(item);
-        else if (item[key] > pivot) right.push(item);
-        else equal.push(item);
-    }
-    
-    return [...quickSort(left, key), ...equal, ...quickSort(right, key)];
+.logo i {
+    font-size: 3rem;
+    color: #fff;
 }
 
-// Bubble Sort
-function bubbleSort(arr, key) {
-    const sorted = [...arr];
-    const n = sorted.length;
-    
-    for (let i = 0; i < n - 1; i++) {
-        for (let j = 0; j < n - i - 1; j++) {
-            if (sorted[j][key] > sorted[j + 1][key]) {
-                [sorted[j], sorted[j + 1]] = [sorted[j + 1], sorted[j]];
-            }
-        }
-    }
-    
-    return sorted;
+.logo h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
 }
 
-// ============================================
-// SORTING EXECUTION
-// ============================================
-
-function runSorting() {
-    if (state.packages.length === 0) {
-        showNotification('Generate data paket terlebih dahulu!', 'warning');
-        return;
-    }
-    
-    const algorithm = document.getElementById('sort-algorithm').value;
-    const sortBy = document.getElementById('sort-by').value;
-    const key = getKeyFromSortBy(sortBy);
-    
-    showLoading(`Menjalankan ${CONFIG.algorithms[algorithm].name}...`);
-    
-    // Jalankan sorting
-    setTimeout(() => {
-        const startTime = performance.now();
-        let sortedPackages;
-        
-        switch (algorithm) {
-            case 'merge-iterative':
-                sortedPackages = mergeSortIterative(state.packages, key);
-                break;
-            case 'merge-recursive':
-                sortedPackages = mergeSortRecursive(state.packages, key);
-                break;
-            case 'quick':
-                sortedPackages = quickSort(state.packages, key);
-                break;
-            case 'bubble':
-                sortedPackages = bubbleSort(state.packages, key);
-                break;
-            default:
-                sortedPackages = [...state.packages];
-        }
-        
-        const endTime = performance.now();
-        const executionTime = endTime - startTime;
-        
-        // Simpan hasil
-        state.results[algorithm] = {
-            time: executionTime,
-            count: sortedPackages.length,
-            sorted: sortedPackages.slice(0, 50) // Simpan 50 pertama untuk display
-        };
-        
-        // Update UI
-        updateAlgorithmResults();
-        updatePackageTable(sortedPackages);
-        updateCharts();
-        
-        hideLoading();
-        
-        showNotification(
-            `${CONFIG.algorithms[algorithm].name} selesai dalam ${executionTime.toFixed(2)} ms!`,
-            'success'
-        );
-        
-    }, 100);
+.logo span {
+    color: #ffd700;
 }
 
-function getKeyFromSortBy(sortBy) {
-    switch (sortBy) {
-        case 'weight': return 'weight';
-        case 'priority': return 'priority';
-        case 'distance': return 'distance';
-        case 'time': return 'estimatedTime';
-        default: return 'weight';
-    }
+.subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-top: 5px;
 }
 
-// ============================================
-// BATCH TESTING
-// ============================================
-
-function runBatchTest() {
-    if (state.packages.length === 0) {
-        showNotification('Generate data paket terlebih dahulu!', 'warning');
-        return;
-    }
-    
-    const sortBy = document.getElementById('sort-by').value;
-    const key = getKeyFromSortBy(sortBy);
-    const sizes = [50, 100, 200, 500, 1000];
-    
-    showLoading('Menjalankan batch test...', true);
-    
-    state.testResults = [];
-    
-    // Jalankan test untuk setiap size
-    sizes.forEach((size, index) => {
-        // Generate subset data
-        const subset = state.packages.slice(0, Math.min(size, state.packages.length));
-        
-        const results = {
-            size: size,
-            algorithms: {}
-        };
-        
-        // Test setiap algoritma
-        Object.keys(CONFIG.algorithms).forEach(algo => {
-            const startTime = performance.now();
-            
-            switch (algo) {
-                case 'merge-iterative':
-                    mergeSortIterative(subset, key);
-                    break;
-                case 'merge-recursive':
-                    mergeSortRecursive(subset, key);
-                    break;
-                case 'quick':
-                    quickSort(subset, key);
-                    break;
-                case 'bubble':
-                    bubbleSort(subset, key);
-                    break;
-            }
-            
-            const endTime = performance.now();
-            results.algorithms[algo] = endTime - startTime;
-        });
-        
-        state.testResults.push(results);
-        
-        // Update progress
-        updateProgress(((index + 1) / sizes.length) * 100);
-    });
-    
-    hideLoading();
-    showResultsModal();
-    updateCharts();
-    
-    showNotification('Batch test selesai! Lihat hasil analisis.', 'success');
+.badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-top: 10px;
 }
 
-// ============================================
-// UI UPDATE FUNCTIONS
-// ============================================
-
-function updateDashboard() {
-    if (state.packages.length === 0) return;
-    
-    const totalWeight = state.packages.reduce((sum, pkg) => sum + pkg.weight, 0);
-    const totalDistance = state.packages.reduce((sum, pkg) => sum + pkg.distance, 0);
-    const totalTime = state.packages.reduce((sum, pkg) => sum + pkg.estimatedTime, 0);
-    
-    document.getElementById('total-packages').textContent = state.packages.length;
-    document.getElementById('avg-weight').textContent = (totalWeight / state.packages.length).toFixed(2) + ' kg';
-    document.getElementById('total-distance').textContent = totalDistance + ' km';
-    document.getElementById('total-time').textContent = totalTime + ' jam';
+.header-info {
+    display: flex;
+    gap: 20px;
 }
 
-function updatePackageTable(packages = state.packages) {
-    const tbody = document.getElementById('packages-body');
-    tbody.innerHTML = '';
-    
-    const displayPackages = packages.slice(0, 20); // Tampilkan 20 pertama
-    
-    displayPackages.forEach(pkg => {
-        const row = document.createElement('tr');
-        
-        // Priority color
-        let priorityClass = '';
-        if (pkg.priority === 1) priorityClass = 'priority-1';
-        else if (pkg.priority === 2) priorityClass = 'priority-2';
-        else if (pkg.priority === 3) priorityClass = 'priority-3';
-        else if (pkg.priority === 4) priorityClass = 'priority-4';
-        else priorityClass = 'priority-5';
-        
-        row.innerHTML = `
-            <td>${pkg.id}</td>
-            <td><strong>${pkg.name}</strong></td>
-            <td>${pkg.weight} kg</td>
-            <td><span class="package-type" style="background:${pkg.typeColor}20;color:${pkg.typeColor}">${pkg.type}</span></td>
-            <td><span class="priority-badge ${priorityClass}">${pkg.priority}</span></td>
-            <td>${pkg.origin} → ${pkg.destination}</td>
-            <td>${pkg.distance} km</td>
-            <td>${pkg.estimatedTime} jam</td>
-            <td><span class="status ${pkg.status}">${pkg.status}</span></td>
-        `;
-        
-        tbody.appendChild(row);
-    });
-    
-    // Jika tidak ada data
-    if (displayPackages.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="9" class="empty">Tidak ada data paket</td>
-            </tr>
-        `;
-    }
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 8px;
 }
 
-function updateAlgorithmResults() {
-    // Update waktu untuk setiap algoritma
-    Object.keys(CONFIG.algorithms).forEach(algo => {
-        const result = state.results[algo];
-        if (result) {
-            document.getElementById(`time-${algo.split('-')[1] || algo}`).textContent = 
-                `${result.time.toFixed(2)} ms`;
-            document.getElementById(`count-${algo.split('-')[1] || algo}`).textContent = 
-                result.count;
-        }
-    });
+/* ===== STATS ===== */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 30px;
+    background: #f8f9fa;
 }
 
-// ============================================
-// CHARTS FUNCTIONS
-// ============================================
-
-function setupCharts() {
-    // Performance Chart
-    const perfCtx = document.getElementById('performanceChart').getContext('2d');
-    state.charts.performance = new Chart(perfCtx, {
-        type: 'bar',
-        data: {
-            labels: Object.values(CONFIG.algorithms).map(a => a.name),
-            datasets: [{
-                label: 'Waktu Eksekusi (ms)',
-                data: [],
-                backgroundColor: Object.values(CONFIG.algorithms).map(a => a.color),
-                borderColor: Object.values(CONFIG.algorithms).map(a => a.color + 'CC'),
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Perbandingan Waktu Sorting',
-                    font: { size: 16 }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.label}: ${context.raw.toFixed(2)} ms`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Waktu (ms)'
-                    }
-                }
-            }
-        }
-    });
-    
-    // Complexity Chart
-    const compCtx = document.getElementById('complexityChart').getContext('2d');
-    state.charts.complexity = new Chart(compCtx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [
-                {
-                    label: 'Merge Sort (Iteratif)',
-                    data: [],
-                    borderColor: CONFIG.algorithms['merge-iterative'].color,
-                    backgroundColor: CONFIG.algorithms['merge-iterative'].color + '20',
-                    borderWidth: 3,
-                    tension: 0.4
-                },
-                {
-                    label: 'Merge Sort (Rekursif)',
-                    data: [],
-                    borderColor: CONFIG.algorithms['merge-recursive'].color,
-                    backgroundColor: CONFIG.algorithms['merge-recursive'].color + '20',
-                    borderWidth: 3,
-                    tension: 0.4
-                },
-                {
-                    label: 'Quick Sort',
-                    data: [],
-                    borderColor: CONFIG.algorithms['quick'].color,
-                    backgroundColor: CONFIG.algorithms['quick'].color + '20',
-                    borderWidth: 3,
-                    tension: 0.4
-                },
-                {
-                    label: 'Bubble Sort',
-                    data: [],
-                    borderColor: CONFIG.algorithms['bubble'].color,
-                    backgroundColor: CONFIG.algorithms['bubble'].color + '20',
-                    borderWidth: 3,
-                    tension: 0.4
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Scaling Performance vs Ukuran Data',
-                    font: { size: 16 }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.dataset.label}: ${context.raw.toFixed(2)} ms`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Jumlah Paket'
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Waktu (ms)'
-                    },
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-    
-    updateCharts();
+.stat-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
 }
 
-function updateCharts() {
-    // Update performance chart
-    if (state.charts.performance) {
-        const perfData = Object.keys(CONFIG.algorithms).map(algo => {
-            return state.results[algo] ? state.results[algo].time : 0;
-        });
-        
-        state.charts.performance.data.datasets[0].data = perfData;
-        state.charts.performance.update();
-    }
-    
-    // Update complexity chart dari batch test
-    if (state.charts.complexity && state.testResults.length > 0) {
-        const sizes = state.testResults.map(r => r.size);
-        
-        // Update labels
-        state.charts.complexity.data.labels = sizes;
-        
-        // Update data untuk setiap algoritma
-        const algorithms = ['merge-iterative', 'merge-recursive', 'quick', 'bubble'];
-        algorithms.forEach((algo, index) => {
-            const data = state.testResults.map(r => r.algorithms[algo] || 0);
-            state.charts.complexity.data.datasets[index].data = data;
-        });
-        
-        state.charts.complexity.update();
-    }
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
 }
 
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
-
-function showLoading(message, showProgress = false) {
-    document.getElementById('loading-message').textContent = message;
-    document.getElementById('loading-modal').style.display = 'flex';
-    
-    if (showProgress) {
-        document.getElementById('progress-bar').style.width = '0%';
-    }
+.stat-card i {
+    font-size: 2.5rem;
+    color: var(--secondary);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 50%;
 }
 
-function hideLoading() {
-    document.getElementById('loading-modal').style.display = 'none';
+.stat-card h3 {
+    font-size: 1rem;
+    color: var(--gray);
+    margin-bottom: 5px;
 }
 
-function updateProgress(percent) {
-    document.getElementById('progress-bar').style.width = percent + '%';
-    document.getElementById('loading-detail').textContent = `Progress: ${Math.round(percent)}%`;
+.stat-card p {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
 }
 
-function showNotification(message, type = 'info') {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    
-    // Icons berdasarkan type
-    const icons = {
-        success: 'fas fa-check-circle',
-        error: 'fas fa-exclamation-circle',
-        warning: 'fas fa-exclamation-triangle',
-        info: 'fas fa-info-circle'
-    };
-    
-    notification.innerHTML = `
-        <i class="${icons[type]}"></i>
-        <span>${message}</span>
-        <button class="notification-close"><i class="fas fa-times"></i></button>
-    `;
-    
-    // Style notification
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 20px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        z-index: 10000;
-        transform: translateX(150%);
-        transition: transform 0.3s ease;
-        max-width: 400px;
-        border-left: 5px solid ${
-            type === 'success' ? '#27ae60' :
-            type === 'error' ? '#e74c3c' :
-            type === 'warning' ? '#f39c12' : '#3498db'
-        };
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Show notification
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 10);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        notification.style.transform = 'translateX(150%)';
-        setTimeout(() => notification.remove(), 300);
-    }, 5000);
-    
-    // Close button
-    notification.querySelector('.notification-close').addEventListener('click', () => {
-        notification.style.transform = 'translateX(150%)';
-        setTimeout(() => notification.remove(), 300);
-    });
+/* ===== CONTROL PANEL ===== */
+.control-panel {
+    padding: 30px;
+    border-bottom: 1px solid #eee;
 }
 
-function showResultsModal() {
-    const modal = document.getElementById('results-modal');
-    const content = document.getElementById('results-content');
-    
-    if (state.testResults.length === 0) {
-        content.innerHTML = '<p>Tidak ada hasil batch test.</p>';
-        return;
-    }
-    
-    let html = `
-        <h3>Hasil Batch Test</h3>
-        <table class="results-table">
-            <thead>
-                <tr>
-                    <th>Jumlah Paket</th>
-                    <th>Merge Iteratif</th>
-                    <th>Merge Rekursif</th>
-                    <th>Quick Sort</th>
-                    <th>Bubble Sort</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-    
-    state.testResults.forEach(result => {
-        html += `
-            <tr>
-                <td><strong>${result.size}</strong></td>
-                <td>${result.algorithms['merge-iterative']?.toFixed(2) || '0'} ms</td>
-                <td>${result.algorithms['merge-recursive']?.toFixed(2) || '0'} ms</td>
-                <td>${result.algorithms['quick']?.toFixed(2) || '0'} ms</td>
-                <td>${result.algorithms['bubble']?.toFixed(2) || '0'} ms</td>
-            </tr>
-        `;
-    });
-    
-    html += `
-            </tbody>
-        </table>
-        
-        <div class="analysis">
-            <h4>Analisis:</h4>
-            <ul>
-                <li>Quick Sort umumnya paling cepat untuk data acak</li>
-                <li>Bubble Sort menunjukkan kompleksitas O(n²) yang jelas</li>
-                <li>Merge Sort stabil untuk semua kasus</li>
-                <li>Iteratif vs Rekursif: perbedaan minimal untuk n kecil</li>
-            </ul>
-        </div>
-    `;
-    
-    content.innerHTML = html;
-    modal.style.display = 'flex';
+.control-panel h2 {
+    color: var(--primary);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-function resetApplication() {
-    if (!confirm('Reset semua data dan hasil?')) return;
-    
-    state.packages = [];
-    state.results = {};
-    state.testResults = [];
-    
-    // Reset UI
-    updateDashboard();
-    updatePackageTable();
-    updateCharts();
-    
-    // Reset algorithm results
-    Object.keys(CONFIG.algorithms).forEach(algo => {
-        const algoName = algo.split('-')[1] || algo;
-        document.getElementById(`time-${algoName}`).textContent = '- ms';
-        document.getElementById(`count-${algoName}`).textContent = '0';
-    });
-    
-    showNotification('Aplikasi telah direset', 'info');
+.controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
 }
 
-// ============================================
-// ADDITIONAL CSS FOR NOTIFICATIONS
-// ============================================
+.control-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: var(--dark);
+}
 
-const style = document.createElement('style');
-style.textContent = `
-.notification {
+.slider-container {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: var(--radius);
+}
+
+.slider {
+    width: 100%;
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--secondary);
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.slider-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--gray);
+}
+
+#count-value {
+    font-weight: 700;
+    color: var(--secondary);
+    font-size: 1.2rem;
+}
+
+select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    background: white;
+    color: var(--dark);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+select:focus {
+    border-color: var(--secondary);
+    outline: none;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: var(--transition);
+    min-width: 180px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--secondary), #2980b9);
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success), #229954);
+    color: white;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--warning), #d68910);
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger), #c0392b);
+    color: white;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    min-width: auto;
+}
+
+/* ===== RESULTS ===== */
+.results {
+    padding: 30px;
+    background: #f8f9fa;
+}
+
+.results h2 {
+    color: var(--primary);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.result-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border-top: 4px solid var(--secondary);
+}
+
+.result-card:hover {
+    transform: translateY(-3px);
+}
+
+.result-card h3 {
+    color: var(--primary);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.complexity {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge-info {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.badge-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge-danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.result-info p {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.result-info span {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.comparison-result {
+    background: white;
+    border-radius: var(--radius);
+    padding: 25px;
+    box-shadow: var(--shadow);
+    margin-top: 20px;
+}
+
+.comparison-result h3 {
+    color: var(--primary);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ===== CHARTS ===== */
+.charts {
+    padding: 30px;
+}
+
+.charts h2 {
+    color: var(--primary);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+    gap: 30px;
+}
+
+.chart-container {
+    background: white;
+    border-radius: var(--radius);
+    padding: 25px;
+    box-shadow: var(--shadow);
+}
+
+.chart-container h3 {
+    color: var(--primary);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* ===== DATA TABLE ===== */
+.data-table {
+    padding: 30px;
+    background: #f8f9fa;
+}
+
+.data-table h2 {
+    color: var(--primary);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.search-box {
+    position: relative;
+    min-width: 250px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.search-box input:focus {
+    border-color: var(--secondary);
+    outline: none;
+}
+
+.table-wrapper {
+    background: white;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+#package-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#package-table thead {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+#package-table th {
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#package-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+#package-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.package-type {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.priority {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
+    font-weight: 600;
+    color: white;
+}
+
+.priority-1 { background: #e74c3c; }
+.priority-2 { background: #e67e22; }
+.priority-3 { background: #f39c12; }
+.priority-4 { background: #2ecc71; }
+.priority-5 { background: #3498db; }
+
+.status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status.pending { background: #fff3cd; color: #856404; }
+.status.processing { background: #d1ecf1; color: #0c5460; }
+.status.delivered { background: #d4edda; color: #155724; }
+
+.empty {
+    text-align: center;
+    padding: 40px !important;
+    color: var(--gray);
+}
+
+.empty i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-pagination {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.btn-pagination:hover:not(:disabled) {
+    border-color: var(--secondary);
+    color: var(--secondary);
+}
+
+.btn-pagination:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#page-info {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.table-stats {
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    background: var(--primary);
+    color: white;
+    padding: 40px 30px 20px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footer-section h4 {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-section p {
+    margin: 8px 0;
+    opacity: 0.8;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.github-link {
+    margin-top: 10px;
+}
+
+.github-link a {
+    color: white;
+    text-decoration: none;
+    margin-left: 8px;
+}
+
+.github-link a:hover {
+    text-decoration: underline;
+}
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-content {
+    background: white;
+    padding: 40px;
+    border-radius: var(--radius);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.spinner i {
+    color: var(--secondary);
+    margin-bottom: 20px;
+}
+
+.progress {
+    height: 10px;
+    background: #e0e0e0;
+    border-radius: 5px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--secondary), var(--success));
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+#loading-detail {
+    font-size: 0.9rem;
+    color: var(--gray);
+    margin-top: 10px;
+}
+
+/* ===== NOTIFICATIONS ===== */
+#notifications {
     position: fixed;
     top: 20px;
     right: 20px;
-    padding: 15px 20px;
+    z-index: 1001;
+}
+
+.notification {
     background: white;
-    border-radius: 10px;
+    padding: 15px 20px;
+    border-radius: var(--radius);
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     display: flex;
     align-items: center;
     gap: 15px;
-    z-index: 10000;
-    transform: translateX(150%);
-    transition: transform 0.3s ease;
-    max-width: 400px;
+    margin-bottom: 10px;
+    animation: slideIn 0.3s ease;
+    border-left: 5px solid;
+    max-width: 350px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.notification.success {
+    border-left-color: var(--success);
+}
+
+.notification.error {
+    border-left-color: var(--danger);
+}
+
+.notification.warning {
+    border-left-color: var(--warning);
+}
+
+.notification.info {
+    border-left-color: var(--secondary);
 }
 
 .notification i:first-child {
     font-size: 1.2rem;
 }
 
-.notification.success i:first-child { color: #27ae60; }
-.notification.error i:first-child { color: #e74c3c; }
-.notification.warning i:first-child { color: #f39c12; }
-.notification.info i:first-child { color: #3498db; }
-
-.notification span {
-    flex: 1;
-}
+.notification.success i:first-child { color: var(--success); }
+.notification.error i:first-child { color: var(--danger); }
+.notification.warning i:first-child { color: var(--warning); }
+.notification.info i:first-child { color: var(--secondary); }
 
 .notification-close {
     background: none;
     border: none;
     cursor: pointer;
-    color: #95a5a6;
+    color: var(--gray);
     padding: 5px;
     border-radius: 50%;
+    margin-left: auto;
 }
 
 .notification-close:hover {
     background: #f8f9fa;
 }
 
-.results-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1rem 0;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.results-table th {
-    background: #f8f9fa;
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #dee2e6;
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .header-info {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .controls-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .table-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box {
+        width: 100%;
+    }
 }
 
-.results-table td {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #dee2e6;
+@media (max-width: 480px) {
+    .container {
+        border-radius: 0;
+        margin: -20px;
+    }
+    
+    body {
+        padding: 0;
+    }
+    
+    .logo h1 {
+        font-size: 2rem;
+    }
+    
+    .stats {
+        grid-template-columns: 1fr;
+    }
 }
-
-.results-table tr:nth-child(even) {
-    background: #f8f9fa;
-}
-
-.analysis {
-    margin-top: 2rem;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-.analysis ul {
-    margin-left: 1.5rem;
-    margin-top: 0.5rem;
-}
-
-.priority-1 { background: #ff6b6b; color: white; }
-.priority-2 { background: #ffa726; color: white; }
-.priority-3 { background: #42a5f5; color: white; }
-.priority-4 { background: #66bb6a; color: white; }
-.priority-5 { background: #bdbdbd; color: #333; }
-
-.status.pending { background: #fff3cd; color: #856404; }
-.status.processing { background: #d1ecf1; color: #0c5460; }
-.status.delivered { background: #d4edda; color: #155724; }
-`;
-document.head.appendChild(style);
