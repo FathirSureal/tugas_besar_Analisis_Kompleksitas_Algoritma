@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Merge Sort untuk Logistik Paket</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-shipping-fast"></i> Analisis Merge Sort untuk Sistem Logistik Paket</h1>
+            <p class="subtitle">Perbandingan Algoritma Merge Sort Iteratif vs Rekursif</p>
+            <p class="tagline">Tugas Besar Analisis Kompleksitas Algoritma - Semester Ganjil 2025/2026</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="stats-card">
+                <i class="fas fa-box-open"></i>
+                <h3>Total Paket</h3>
+                <p id="total-packages">0</p>
+            </div>
+            <div class="stats-card">
+                <i class="fas fa-weight-hanging"></i>
+                <h3>Rata-rata Berat</h3>
+                <p id="avg-weight">0 kg</p>
+            </div>
+            <div class="stats-card">
+                <i class="fas fa-tachometer-alt"></i>
+                <h3>Waktu Iteratif</h3>
+                <p id="time-iterative">0 ms</p>
+            </div>
+            <div class="stats-card">
+                <i class="fas fa-code-branch"></i>
+                <h3>Waktu Rekursif</h3>
+                <p id="time-recursive">0 ms</p>
+            </div>
+        </div>
+
+        <section class="control-panel">
+            <h2><i class="fas fa-cogs"></i> Kontrol Pengujian</h2>
+            
+            <div class="form-group">
+                <label for="data-size"><i class="fas fa-boxes"></i> Jumlah Paket:</label>
+                <div class="input-range">
+                    <input type="range" id="data-size-range" min="100" max="10000" value="1000" step="100">
+                    <span class="range-value" id="size-value">1000</span>
+                    <input type="number" id="data-size" min="100" max="50000" value="1000">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="sort-criteria"><i class="fas fa-sort-amount-down"></i> Kriteria Pengurutan:</label>
+                <select id="sort-criteria">
+                    <option value="weight">Berat Paket (kg)</option>
+                    <option value="priority">Prioritas Pengiriman</option>
+                    <option value="distance">Jarak Pengiriman (km)</option>
+                    <option value="value">Nilai Acak</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-generate" id="generate-data">
+                    <i class="fas fa-database"></i> Generate Data Paket
+                </button>
+                <button class="btn btn-run" id="run-single">
+                    <i class="fas fa-play"></i> Jalankan Pengurutan
+                </button>
+                <button class="btn btn-batch" id="run-batch">
+                    <i class="fas fa-chart-line"></i> Uji Batch Performance
+                </button>
+                <button class="btn btn-reset" id="reset-btn">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+        </section>
+
+        <section class="algorithm-comparison">
+            <h2><i class="fas fa-balance-scale"></i> Perbandingan Algoritma</h2>
+            
+            <div class="comparison-container">
+                <div class="algorithm-card iterative">
+                    <h3><i class="fas fa-sync-alt"></i> Merge Sort Iteratif</h3>
+                    <div class="complexity-badge">Kompleksitas: O(n log n)</div>
+                    <div class="memory-badge">Memori: O(n)</div>
+                    
+                    <div class="result-box">
+                        <h4><i class="fas fa-list-ol"></i> 10 Paket Terurut Pertama:</h4>
+                        <div class="package-list" id="iterative-result">
+                            <div class="empty-state">Belum dijalankan</div>
+                        </div>
+                        <div class="time-display">
+                            <i class="fas fa-clock"></i> Waktu Eksekusi: 
+                            <span id="iterative-time">- ms</span>
+                        </div>
+                    </div>
+                    
+                    <div class="algorithm-info">
+                        <h5><i class="fas fa-info-circle"></i> Kelebihan:</h5>
+                        <ul>
+                            <li>Tidak menggunakan stack rekursif</li>
+                            <li>Lebih aman untuk data sangat besar</li>
+                            <li>Cache-friendly untuk implementasi tertentu</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="algorithm-card recursive">
+                    <h3><i class="fas fa-code-branch"></i> Merge Sort Rekursif</h3>
+                    <div class="complexity-badge">Kompleksitas: O(n log n)</div>
+                    <div class="memory-badge">Memori: O(n) + stack O(log n)</div>
+                    
+                    <div class="result-box">
+                        <h4><i class="fas fa-list-ol"></i> 10 Paket Terurut Pertama:</h4>
+                        <div class="package-list" id="recursive-result">
+                            <div class="empty-state">Belum dijalankan</div>
+                        </div>
+                        <div class="time-display">
+                            <i class="fas fa-clock"></i> Waktu Eksekusi: 
+                            <span id="recursive-time">- ms</span>
+                        </div>
+                    </div>
+                    
+                    <div class="algorithm-info">
+                        <h5><i class="fas fa-info-circle"></i> Kelebihan:</h5>
+                        <ul>
+                            <li>Implementasi lebih sederhana dan elegan</li>
+                            <li>Mudah dipahami secara konseptual</li>
+                            <li>Divide-and-conquer natural</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comparison-summary" id="comparison-summary">
+                <h4><i class="fas fa-chart-bar"></i> Ringkasan Perbandingan</h4>
+                <p>Jalankan pengurutan untuk melihat perbandingan performa</p>
+            </div>
+        </section>
+
+        <section class="charts-section">
+            <h2><i class="fas fa-chart-area"></i> Visualisasi Performance</h2>
+            
+            <div class="chart-container">
+                <div class="chart-box">
+                    <h4>Grafik Running Time Berbagai Ukuran Data</h4>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                
+                <div class="chart-box">
+                    <h4>Perbandingan Waktu Eksekusi</h4>
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="batch-control">
+                <h4><i class="fas fa-vial"></i> Pengujian Batch</h4>
+                <div class="form-group">
+                    <label>Rentang Ukuran Data:</label>
+                    <div class="range-inputs">
+                        <input type="number" id="batch-min" min="100" max="10000" value="500" placeholder="Min">
+                        <span>sampai</span>
+                        <input type="number" id="batch-max" min="1000" max="50000" value="5000" placeholder="Max">
+                        <span>step</span>
+                        <input type="number" id="batch-step" min="100" max="5000" value="500" placeholder="Step">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="package-table">
+            <h2><i class="fas fa-table"></i> Data Paket Logistik</h2>
+            <div class="table-container">
+                <table id="package-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Jenis</th>
+                            <th>Berat (kg)</th>
+                            <th>Prioritas</th>
+                            <th>Jarak (km)</th>
+                            <th>Estimasi (jam)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="package-table-body">
+                        <tr>
+                            <td colspan="6" class="empty-table">Generate data paket terlebih dahulu</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="analysis-section">
+            <h2><i class="fas fa-chart-pie"></i> Analisis Kompleksitas</h2>
+            
+            <div class="analysis-grid">
+                <div class="analysis-card">
+                    <h4><i class="fas fa-project-diagram"></i> Analisis Big-O</h4>
+                    <div class="complexity-analysis">
+                        <div class="complexity-item">
+                            <h5>Merge Sort Iteratif</h5>
+                            <ul>
+                                <li><strong>Worst Case:</strong> O(n log n)</li>
+                                <li><strong>Best Case:</strong> O(n log n)</li>
+                                <li><strong>Average Case:</strong> O(n log n)</li>
+                                <li><strong>Space:</strong> O(n)</li>
+                            </ul>
+                        </div>
+                        <div class="complexity-item">
+                            <h5>Merge Sort Rekursif</h5>
+                            <ul>
+                                <li><strong>Worst Case:</strong> O(n log n)</li>
+                                <li><strong>Best Case:</strong> O(n log n)</li>
+                                <li><strong>Average Case:</strong> O(n log n)</li>
+                                <li><strong>Space:</strong> O(n) + stack O(log n)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-card">
+                    <h4><i class="fas fa-industry"></i> Aplikasi dalam Logistik</h4>
+                    <p>Merge Sort digunakan dalam sistem logistik untuk:</p>
+                    <ul>
+                        <li>Pengurutan paket berdasarkan prioritas pengiriman</li>
+                        <li>Optimasi rute berdasarkan jarak terdekat</li>
+                        <li>Pengelompokan paket berdasarkan berat</li>
+                        <li>Penjadwalan pengiriman berdasarkan waktu estimasi</li>
+                    </ul>
+                </div>
+                
+                <div class="analysis-card">
+                    <h4><i class="fas fa-lightbulb"></i> Rekomendasi Implementasi</h4>
+                    <div class="recommendation">
+                        <div class="rec-item">
+                            <h5><i class="fas fa-microchip"></i> Untuk Data Besar (>10.000)</h5>
+                            <p>Gunakan <strong>Iteratif</strong> untuk menghindari stack overflow</p>
+                        </div>
+                        <div class="rec-item">
+                            <h5><i class="fas fa-bolt"></i> Untuk Performa Optimal</h5>
+                            <p>Gunakan <strong>Hybrid Approach</strong> (Insertion Sort untuk n kecil)</p>
+                        </div>
+                        <div class="rec-item">
+                            <h5><i class="fas fa-code"></i> Untuk Kode yang Bersih</h5>
+                            <p>Gunakan <strong>Rekursif</strong> untuk readability dan maintainability</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-university"></i> Tugas Besar</h4>
+                    <p>Analisis Kompleksitas Algoritma</p>
+                    <p>Semester Ganjil 2025/2026</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-users"></i> Kelompok</h4>
+                    <p>Implementasi Merge Sort Iteratif vs Rekursif</p>
+                    <p>dalam Konteks Logistik Paket</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-server"></i> Backend API</h4>
+                    <p id="api-status"><i class="fas fa-circle" style="color: #ff4757;"></i> API Offline</p>
+                    <button class="btn btn-small" id="check-api">
+                        <i class="fas fa-sync-alt"></i> Check Status
+                    </button>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 - Analisis Kompleksitas Algoritma | Dibuat untuk tujuan akademis</p>
+            </div>
+        </footer>
+    </div>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <i class="fas fa-spinner fa-spin fa-3x"></i>
+            <h3 id="loading-text">Memproses data...</h3>
+            <div class="progress-bar">
+                <div class="progress" id="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
