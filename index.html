@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merge Sort Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="header-content">
+        <div class="logo">
+            <i class="fa-solid fa-chart-line"></i>
+            <div>
+                <h1>TUBES AKA</h1>
+                <p>Analisis Perbandingan Algoritma Merge Sort Rekursif dan Iteratif pada Pengurutan Data Logistik Ekspedisi di Indonesia.</p>
+            </div>
+        </div>
+        
+        <nav class="nav-tabs">
+            <button class="nav-btn active" onclick="switchTab('dashboard')">
+                <i class="fa-solid fa-desktop"></i> Dashboard
+            </button>
+            <button class="nav-btn" onclick="switchTab('conclusion')">
+                <i class="fa-solid fa-file-contract"></i> Analisis & Kesimpulan
+            </button>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+
+    <div id="view-dashboard" class="view-section">
+        <div class="dashboard-grid">
+            <section class="card control-panel">
+                <div class="card-header">
+                    <i class="fa-solid fa-flask"></i>
+                    <h2>Konfigurasi Uji</h2>
+                </div>
+                
+                <div class="input-group">
+                    <label>Skenario Data (Case)</label>
+                    <select id="dataCase" class="custom-select">
+                        <option value="Average Case">Average Case (Data Acak)</option>
+                        <option value="Best Case">Best Case (Sudah Terurut)</option>
+                        <option value="Worst Case">Worst Case (Terbalik/Reverse)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Ukuran Data (n): <span id="nValue" class="highlight-value">1000</span></label>
+                    <div class="range-wrapper">
+                        <input type="range" id="inputSlider" min="1" max="10000" value="1000" step="1" oninput="updateSliderValue(this.value)">
+                        <div class="range-labels"><span>1 - </span><span>10.000</span></div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="primary-btn" onclick="tambahDataKeGrafik()">
+                        <i class="fa-solid fa-plus"></i> Tambah ke Grafik
+                    </button>
+                    <button class="secondary-btn" onclick="resetData()">
+                        <i class="fa-solid fa-trash"></i> Reset
+                    </button>
+                </div>
+                <p id="status" class="status">Siap menunggu perintah...</p>
+            </section>
+
+            <section class="card result-panel">
+                <div class="card-header-row">
+                    <div class="card-header">
+                        <i class="fa-solid fa-table"></i>
+                        <h2>Data Hasil</h2>
+                    </div>
+                    <button id="exportCsvBtn" class="secondary-btn" style="padding: 5px 10px; font-size: 0.8rem;">
+                        <i class="fa-solid fa-download"></i> CSV
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Case</th>
+                                <th>Data (n)</th>
+                                <th>Rekursif (ms)</th>
+                                <th>Iteratif (ms)</th>
+                                <th>Analisis Perbandingan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelHasil">
+                            <tr><td colspan="5" class="empty-state">Belum ada data pengujian</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <section class="card chart-panel">
+            <div class="card-header">
+                <i class="fa-solid fa-chart-area"></i>
+                <h2>Visualisasi Performa</h2>
+            </div>
+            <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </section>
+    </div>
+
+    <div id="view-conclusion" class="view-section hidden">
+        
+        <div class="score-grid">
+            <div class="card score-card rekursif">
+                <h3>Rekursif Wins</h3>
+                <div class="score-number" id="score-rekursif">0</div>
+                <p>Kali lebih cepat</p>
+            </div>
+            <div class="card score-card iteratif">
+                <h3>Iteratif Wins</h3>
+                <div class="score-number" id="score-iteratif">0</div>
+                <p>Kali lebih cepat</p>
+            </div>
+            <div class="card score-card total">
+                <h3>Total Data</h3>
+                <div class="score-number" id="total-experiment">0</div>
+                <p>Sampel pengujian</p>
+            </div>
+        </div>
+
+        <section class="card recommendation-panel">
+            <div class="card-header">
+                <i class="fa-solid fa-lightbulb" style="color: #d97706;"></i>
+                <h2>Rekomendasi Implementasi</h2>
+            </div>
+            <div id="recommendation-content">
+                <p class="placeholder-text">Jalankan eksperimen untuk mendapatkan rekomendasi.</p>
+            </div>
+        </section>
+
+        <section class="card analysis-text">
+            <div class="card-header">
+                <i class="fa-solid fa-magnifying-glass-chart"></i>
+                <h2>Detail Analisis Otomatis</h2>
+            </div>
+            <div id="analysis-content">
+                <p class="placeholder-text">Silakan jalankan eksperimen di Dashboard terlebih dahulu.</p>
+            </div>
+        </section>
+
+        <section class="card theory-text">
+            <div class="card-header">
+                <i class="fa-solid fa-book-open"></i>
+                <h2>Landasan Teori</h2>
+            </div>
+            <div class="theory-content">
+                <p>Secara teoretis, algoritma Merge Sort rekursif dan iteratif memiliki kompleksitas waktu yang sama, yaitu <strong>O(n log n)</strong> , sehingga keduanya menunjukkan performa yang relatif sebanding dalam proses pengurutan data berskala besar. Hasil pengujian empiris juga menunjukkan bahwa perbedaan waktu eksekusi yang terjadi tidak signifikan dan dipengaruhi oleh faktor implementasi serta kondisi runtime sistem</p>
+                <ul>
+                    <li><strong>Merge Sort Rekursif:</strong> Menggunakan Stack Memory untuk pemanggilan fungsi secara berulang. Pada data yang sangat besar, ini bisa menyebabkan <em>Stack Overflow</em>.</li>
+                    <li><strong>Merge Sort Iteratif:</strong> menghindari pemanggilan fungsi rekursif sehingga lebih aman dari sisi penggunaan memori dan memiliki karakteristik space complexity yang lebih stabil, sehingga lebih aman untuk data skala besar.</li>
+                </ul>
+            </div>
+        </section>
+
+    </div>
+
+</main>
+
+<footer>
+    <p>&copy; 2025 Tugas Besar Analisis Kompleksitas Algoritma | Program Studi Informatika</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
