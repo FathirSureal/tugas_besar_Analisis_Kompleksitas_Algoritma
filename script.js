@@ -158,11 +158,13 @@ function setupEventListeners() {
     });
     
     // Tombol Deploy Guide
-    document.getElementById('btn-deploy').addEventListener('click', function() {
-        showDeployGuide();
+
+        const deployBtn = document.getElementById('btn-deploy');
+        if (deployBtn) {
+            deployBtn.addEventListener('click', function() {
+            showDeployGuide();
     });
 }
-
 // Data Generation
 
 function generatePackages(count) {
@@ -1077,4 +1079,5 @@ document.head.appendChild(dynamicStyles);
 
 
 console.log(`${CONFIG.appName} initialized successfully!`);
+
 
