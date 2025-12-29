@@ -1,4 +1,4 @@
-/* ===== RESET & BASE ===== */
+/* Reset and Base */
 * {
     margin: 0;
     padding: 0;
@@ -38,7 +38,7 @@ body {
     overflow: hidden;
 }
 
-/* ===== HEADER ===== */
+/* Header */
 .header {
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
@@ -98,7 +98,7 @@ body {
     border-radius: 8px;
 }
 
-/* ===== STATS ===== */
+/* Statistics */
 .stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -147,7 +147,7 @@ body {
     color: var(--primary);
 }
 
-/* ===== CONTROL PANEL ===== */
+/* Control Panel */
 .control-panel {
     padding: 30px;
     border-bottom: 1px solid #eee;
@@ -287,7 +287,7 @@ select:focus {
     min-width: auto;
 }
 
-/* ===== RESULTS ===== */
+/* Results */
 .results {
     padding: 30px;
     background: #f8f9fa;
@@ -390,7 +390,7 @@ select:focus {
     gap: 10px;
 }
 
-/* ===== CHARTS ===== */
+/* Charts */
 .charts {
     padding: 30px;
 }
@@ -422,7 +422,7 @@ select:focus {
     text-align: center;
 }
 
-/* ===== DATA TABLE ===== */
+/* Data Table */
 .data-table {
     padding: 30px;
     background: #f8f9fa;
@@ -605,7 +605,7 @@ select:focus {
     font-size: 0.9rem;
 }
 
-/* ===== FOOTER ===== */
+/* Footer */
 .footer {
     background: var(--primary);
     color: white;
@@ -651,7 +651,7 @@ select:focus {
     text-decoration: underline;
 }
 
-/* ===== LOADING OVERLAY ===== */
+/* Loading Obverlay */
 .loading-overlay {
     display: none;
     position: fixed;
@@ -700,7 +700,7 @@ select:focus {
     margin-top: 10px;
 }
 
-/* ===== NOTIFICATIONS ===== */
+/* Notification */
 #notifications {
     position: fixed;
     top: 20px;
@@ -772,7 +772,7 @@ select:focus {
     background: #f8f9fa;
 }
 
-/* ===== RESPONSIVE ===== */
+/* Responsive */
 @media (max-width: 1200px) {
     .charts-grid {
         grid-template-columns: 1fr;
@@ -834,4 +834,5 @@ select:focus {
     .stats {
         grid-template-columns: 1fr;
     }
+
 }
