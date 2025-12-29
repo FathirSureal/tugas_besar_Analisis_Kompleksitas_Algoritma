@@ -1,9 +1,12 @@
+// ============================================
+// LOGISTICS SORTING APPLICATION - FULL CLIENT SIDE
+// ============================================
 
 // Konfigurasi Aplikasi
 const CONFIG = {
     appName: "LogisticsSort",
     version: "1.0.0",
-    maxPackages: 10000,
+    maxPackages: 1000,
     algorithms: {
         'merge-iterative': { name: 'Merge Sort Iteratif', color: '#3498db', complexity: 'O(n log n)' },
         'merge-recursive': { name: 'Merge Sort Rekursif', color: '#e74c3c', complexity: 'O(n log n)' },
@@ -64,7 +67,9 @@ let AppState = {
     testHistory: []
 };
 
-// Initialization
+// ============================================
+// INITIALIZATION
+// ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log(`${CONFIG.appName} v${CONFIG.version} - Initializing...`);
@@ -87,7 +92,9 @@ document.addEventListener('DOMContentLoaded', function() {
         : 'github.com/username/logistics-sorting';
 });
 
-// Event Listeners
+// ============================================
+// EVENT LISTENERS
+// ============================================
 
 function setupEventListeners() {
     // Slider untuk jumlah paket
@@ -158,14 +165,14 @@ function setupEventListeners() {
     });
     
     // Tombol Deploy Guide
-
-        const deployBtn = document.getElementById('btn-deploy');
-        if (deployBtn) {
-            deployBtn.addEventListener('click', function() {
-            showDeployGuide();
+    document.getElementById('btn-deploy').addEventListener('click', function() {
+        showDeployGuide();
     });
 }
-// Data Generation
+
+// ============================================
+// DATA GENERATION
+// ============================================
 
 function generatePackages(count) {
     showLoading(`Membuat ${count} data paket logistik...`);
@@ -219,7 +226,9 @@ function generatePackages(count) {
     console.log(`Generated ${count} packages:`, AppState.packages.slice(0, 3));
 }
 
-// Sorting Algortithm
+// ============================================
+// SORTING ALGORITHMS
+// ============================================
 
 // Merge Sort Iteratif
 function mergeSortIterative(arr, key) {
@@ -355,7 +364,9 @@ function selectionSort(arr, key) {
     return sorted;
 }
 
-// Sorting Exe
+// ============================================
+// SORTING EXECUTION
+// ============================================
 
 function runSelectedAlgorithm() {
     if (AppState.packages.length === 0) {
@@ -493,7 +504,9 @@ function compareAllAlgorithms() {
     });
 }
 
-// UI update
+// ============================================
+// UI UPDATE FUNCTIONS
+// ============================================
 
 function updateDashboard() {
     if (AppState.packages.length === 0) {
@@ -515,15 +528,7 @@ function updateDashboard() {
 }
 
 function updateAlgorithmResult(algorithmId, time) {
-    const map = {
-    'merge-iterative': 'iterative',
-    'merge-recursive': 'recursive',
-    'quick': 'quick',
-    'bubble': 'bubble',
-    'insertion': 'insertion',
-    'selection': 'selection'
-};
-    const algoName = map[algorithmId];
+    const algoName = algorithmId.split('-')[1] || algorithmId;
     const timeElement = document.getElementById(`time-${algoName}`);
     const statusElement = document.getElementById(`status-${algoName}`);
     
@@ -718,7 +723,9 @@ function updateTableControls() {
     }
 }
 
-// Charts
+// ============================================
+// CHARTS
+// ============================================
 
 function initializeCharts() {
     // Performance Chart
@@ -843,7 +850,9 @@ function updateCharts() {
     }
 }
 
-// Util Function
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
 
 function showLoading(message, showProgress = false) {
     const overlay = document.getElementById('loading');
@@ -989,7 +998,9 @@ function showDeployGuide() {
     showNotification(guide, 'info');
 }
 
-// Dynamic Style (diinject ke DOM)
+// ============================================
+// STYLES DINAMIS (diinject ke DOM)
+// ============================================
 
 const dynamicStyles = document.createElement('style');
 dynamicStyles.textContent = `
@@ -1085,8 +1096,4 @@ dynamicStyles.textContent = `
 `;
 document.head.appendChild(dynamicStyles);
 
-
 console.log(`${CONFIG.appName} initialized successfully!`);
-
-
-
