@@ -515,7 +515,15 @@ function updateDashboard() {
 }
 
 function updateAlgorithmResult(algorithmId, time) {
-    const algoName = algorithmId.split('-')[1] || algorithmId;
+    const map = {
+    'merge-iterative': 'iterative',
+    'merge-recursive': 'recursive',
+    'quick': 'quick',
+    'bubble': 'bubble',
+    'insertion': 'insertion',
+    'selection': 'selection'
+};
+    const algoName = map[algorithmId];
     const timeElement = document.getElementById(`time-${algoName}`);
     const statusElement = document.getElementById(`status-${algoName}`);
     
@@ -1079,5 +1087,6 @@ document.head.appendChild(dynamicStyles);
 
 
 console.log(`${CONFIG.appName} initialized successfully!`);
+
 
 
